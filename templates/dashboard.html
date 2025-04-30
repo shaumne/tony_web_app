@@ -142,6 +142,17 @@
     <div class="col-md-3 mb-3">
         <div class="card stats-card h-100">
             <div class="card-body text-center p-4">
+                <i class="fas fa-wallet stats-icon"></i>
+                <div class="stats-value">
+                    {{ account_balance | round(2) }} <span class="text-muted" style="font-size: 0.8rem;">USDT</span>
+                </div>
+                <div class="stats-label">Account Balance</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="card stats-card h-100">
+            <div class="card-body text-center p-4">
                 <i class="fas fa-toggle-on stats-icon {% if config.enable_trading %}text-success{% else %}text-danger{% endif %}"></i>
                 <div class="stats-value">
                     <span class="status-badge {% if config.enable_trading %}status-active{% else %}status-inactive{% endif %}">
@@ -152,7 +163,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3 mb-3">
+    <div class="col-md-2 mb-3">
         <div class="card stats-card h-100">
             <div class="card-body text-center p-4">
                 <i class="fas fa-chart-line stats-icon"></i>
@@ -163,7 +174,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3 mb-3">
+    <div class="col-md-2 mb-3">
         <div class="card stats-card h-100">
             <div class="card-body text-center p-4">
                 <i class="fas fa-coins stats-icon"></i>
@@ -207,6 +218,7 @@
                                         <th>Size</th>
                                         <th>Open Time</th>
                                         <th>Status</th>
+                                        <th class="text-end">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -225,6 +237,16 @@
                                         <td>{{ position.open_time }}</td>
                                         <td>
                                             <span class="badge bg-primary">OPEN</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <form method="post" action="/close_position" class="d-inline">
+                                                <input type="hidden" name="position_id" value="{{ position.id }}">
+                                                <input type="hidden" name="symbol" value="{{ position.symbol }}">
+                                                <input type="hidden" name="direction" value="{{ position.direction }}">
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to close this position?')">
+                                                    <i class="fas fa-times me-1"></i> Close
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                     {% endfor %}

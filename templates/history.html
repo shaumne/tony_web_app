@@ -99,9 +99,13 @@
         font-weight: 600;
     }
     
-    .position-chart {
-        height: 200px;
+    .position-chart-container {
+        height: 300px;
         margin-bottom: 2rem;
+        border-radius: 1rem;
+        padding: 1rem;
+        background-color: #1f2937;
+        border: 1px solid #374151;
     }
 </style>
 {% endblock %}
@@ -114,9 +118,14 @@
 </div>
 
 {% if positions %}
-    <!-- Total PnL Card -->
+    <!-- Chart and PnL Section -->
     <div class="row mb-4">
-        <div class="col-lg-6 col-md-8 mx-auto">
+        <div class="col-lg-8">
+            <div class="position-chart-container">
+                <canvas id="pnlChart"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-4">
             <div class="total-pnl-card {% if total_pnl > 0 %}profit{% elif total_pnl < 0 %}loss{% endif %}">
                 <div class="mb-2">Total Profit/Loss</div>
                 <div class="total-pnl-value {% if total_pnl > 0 %}profit{% elif total_pnl < 0 %}loss{% endif %}">
@@ -166,9 +175,8 @@
                                     <td>{{ position.open_time }}</td>
                                     <td>{{ position.close_time }}</td>
                                     <td class="pnl-cell">
-                                        {% set pnl = position.calculate_pnl() %}
-                                        <span class="{% if pnl > 0 %}profit{% elif pnl < 0 %}loss{% endif %}">
-                                            {{ "%.2f"|format(pnl) }}
+                                        <span class="{% if position.pnl > 0 %}profit{% elif position.pnl < 0 %}loss{% endif %}">
+                                            {{ "%.2f"|format(position.pnl) }}
                                         </span>
                                     </td>
                                 </tr>
@@ -201,44 +209,48 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Calculate running P/L values over time
-        const positions = {{ positions|map(attribute='calculate_pnl')|list|tojson }};
-        const times = {{ positions|map(attribute='close_time')|list|tojson }};
+        // Get position data (PnL values and dates)
+        var positionData = [];
+        {% for position in positions %}
+        positionData.push({
+            pnl: {{ position.pnl }},
+            date: "{{ position.close_time }}"
+        });
+        {% endfor %}
+        
+        // Sort by date (oldest first)
+        positionData.sort(function(a, b) {
+            return new Date(a.date) - new Date(b.date);
+        });
         
         // Calculate cumulative values
-        let cumulative = [];
-        let sum = 0;
-        for (let i = positions.length - 1; i >= 0; i--) {
-            sum += positions[i];
-            cumulative.unshift(sum);
+        var cumulativePnl = [];
+        var labels = [];
+        var runningTotal = 0;
+        
+        for (var i = 0; i < positionData.length; i++) {
+            runningTotal += positionData[i].pnl;
+            cumulativePnl.push(runningTotal);
+            labels.push(positionData[i].date);
         }
         
-        // Reverse times for chronological order
-        const timeLabels = times.slice().reverse();
-        
-        // Create the chart
-        const chartCtx = document.createElement('canvas');
-        chartCtx.id = 'pnlChart';
-        chartCtx.classList.add('position-chart');
-        
-        // Insert chart at the top of the content
-        const totalPnlCard = document.querySelector('.total-pnl-card');
-        totalPnlCard.parentNode.insertAdjacentElement('afterend', chartCtx);
-        
-        new Chart(chartCtx, {
+        // Create chart
+        var ctx = document.getElementById('pnlChart').getContext('2d');
+        new Chart(ctx, {
             type: 'line',
             data: {
-                labels: timeLabels,
+                labels: labels,
                 datasets: [{
-                    label: 'Cumulative P/L',
-                    data: cumulative,
+                    label: 'Cumulative P/L (USDT)',
+                    data: cumulativePnl,
                     borderColor: '#4cc9f0',
                     backgroundColor: 'rgba(76, 201, 240, 0.1)',
-                    tension: 0.3,
+                    borderWidth: 2,
                     fill: true,
+                    tension: 0.3,
                     pointBackgroundColor: function(context) {
-                        const index = context.dataIndex;
-                        const value = context.dataset.data[index];
+                        var index = context.dataIndex;
+                        var value = context.dataset.data[index];
                         return value >= 0 ? '#4cc9f0' : '#ff5a5f';
                     },
                     pointBorderColor: '#1f2937',
@@ -248,10 +260,8 @@
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: false
-                    },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
@@ -266,7 +276,6 @@
                             color: 'rgba(75, 85, 99, 0.2)'
                         },
                         ticks: {
-                            color: '#9ca3af',
                             maxRotation: 0,
                             autoSkip: true,
                             maxTicksLimit: 8
@@ -277,7 +286,9 @@
                             color: 'rgba(75, 85, 99, 0.2)'
                         },
                         ticks: {
-                            color: '#9ca3af'
+                            callback: function(value) {
+                                return value.toFixed(2) + ' USDT';
+                            }
                         }
                     }
                 }

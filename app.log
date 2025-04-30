@@ -86,3 +86,539 @@
 2025-04-29 18:13:03,240 - werkzeug - INFO - 127.0.0.1 - - [29/Apr/2025 18:13:03] "GET /history HTTP/1.1" 200 -
 2025-04-29 18:13:04,368 - werkzeug - INFO - 127.0.0.1 - - [29/Apr/2025 18:13:04] "GET /settings HTTP/1.1" 200 -
 2025-04-29 18:13:20,357 - werkzeug - INFO - 127.0.0.1 - - [29/Apr/2025 18:13:20] "GET /users HTTP/1.1" 200 -
+2025-05-01 03:10:24,191 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.58:5000
+2025-05-01 03:10:24,192 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-01 03:10:24,194 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:10:25,045 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:10:25,050 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:10:32,469 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:10:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-05-01 03:10:32,515 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:10:32] "GET /login HTTP/1.1" 200 -
+2025-05-01 03:10:36,524 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:10:36] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-05-01 03:10:36,541 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:10:36] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 03:10:39,003 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:10:39] "GET /settings HTTP/1.1" 200 -
+2025-05-01 03:11:39,780 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:11:39,782 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:11:39] "[32mPOST /settings HTTP/1.1[0m" 302 -
+2025-05-01 03:11:39,802 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:11:39] "GET /settings HTTP/1.1" 200 -
+2025-05-01 03:12:44,588 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:12:44,589 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:12:44] "[32mPOST /settings HTTP/1.1[0m" 302 -
+2025-05-01 03:12:44,613 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:12:44,615 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:12:44] "GET /settings HTTP/1.1" 200 -
+2025-05-01 03:14:12,433 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\test\\webhook_test.py', reloading
+2025-05-01 03:14:12,535 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:14:13,493 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:14:13,498 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:24:03,612 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:24:03] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2025-05-01 03:24:40,194 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\test\\webhook_test.py', reloading
+2025-05-01 03:24:40,314 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:24:41,269 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:24:41,274 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:26:20,143 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:26:20,144 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:26:20] "[31m[1mPOST /webhook HTTP/1.1[0m" 400 -
+2025-05-01 03:27:04,915 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\test\\webhook_test.py', reloading
+2025-05-01 03:27:04,994 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:27:06,001 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:27:06,007 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:27:21,275 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:27:21,276 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:27:21] "POST /webhook HTTP/1.1" 200 -
+2025-05-01 03:27:21,277 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:27:21,278 - __main__ - ERROR - Error executing trade: AccountApi.account() takes 2 positional arguments but 3 were given
+2025-05-01 03:27:21,281 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:27:23,826 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7212214739:AAGtBFsx2ULZhqj6RJ9Ytns1_-2sn2GRVu4/sendMessage "HTTP/1.1 400 Bad Request"
+2025-05-01 03:27:23,827 - __main__ - ERROR - Failed to send Telegram notification: Chat not found
+2025-05-01 03:28:24,676 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 03:28:24,864 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:28:25,693 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:28:25,697 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:28:39,738 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 03:28:39,867 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:28:40,742 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:28:40,748 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:28:49,633 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:28:49,660 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:28:49] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 03:28:51,132 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:28:51] "GET /history HTTP/1.1" 200 -
+2025-05-01 03:28:52,084 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:28:52,086 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:28:52] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 03:29:16,189 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 03:29:16,318 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:29:17,280 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:29:17,285 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:29:18,604 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 03:29:18,718 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:29:19,522 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:29:19,529 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:29:40,383 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 03:29:40,472 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:29:41,499 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:29:41,505 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:29:49,985 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 03:29:50,065 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:29:50,972 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:29:50,977 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:29:54,838 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:29:54,839 - __main__ - INFO - Received webhook signal: BTCUSDT/long/open
+2025-05-01 03:29:54,840 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:29:54] "POST /webhook HTTP/1.1" 200 -
+2025-05-01 03:29:54,841 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:29:54,842 - __main__ - ERROR - Error executing trade: AccountApi.account() got an unexpected keyword argument 'productType'
+2025-05-01 03:29:54,847 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:29:57,109 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7212214739:AAGtBFsx2ULZhqj6RJ9Ytns1_-2sn2GRVu4/sendMessage "HTTP/1.1 400 Bad Request"
+2025-05-01 03:29:57,110 - __main__ - ERROR - Failed to send Telegram notification: Chat not found
+2025-05-01 03:29:57,118 - __main__ - ERROR - Telegram hata detaylarý: Traceback (most recent call last):
+  File "d:\upwork\tonny-web-app\app.py", line 379, in process_signal
+    order_result = bitget_handler.place_order(symbol, side)
+  File "d:\upwork\tonny-web-app\bitget_handler.py", line 124, in place_order
+    balance = self.get_account_balance('USDT')
+  File "d:\upwork\tonny-web-app\bitget_handler.py", line 44, in get_account_balance
+    response = self.account_api.account(productType="umcbl")
+TypeError: AccountApi.account() got an unexpected keyword argument 'productType'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "d:\upwork\tonny-web-app\app.py", line 125, in send_telegram_notification
+    await bot.send_message(chat_id=chat_id, text=message)
+  File "C:\Users\derba\AppData\Roaming\Python\Python313\site-packages\telegram\_bot.py", line 542, in decorator
+    result = await func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\derba\AppData\Roaming\Python\Python313\site-packages\telegram\_bot.py", line 1018, in send_message
+    return await self._send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<16 lines>...
+    )
+    ^
+  File "C:\Users\derba\AppData\Roaming\Python\Python313\site-packages\telegram\_bot.py", line 736, in _send_message
+    result = await self._post(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\Users\derba\AppData\Roaming\Python\Python313\site-packages\telegram\_bot.py", line 630, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "C:\Users\derba\AppData\Roaming\Python\Python313\site-packages\telegram\_bot.py", line 658, in _do_post
+    return await request.post(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "C:\Users\derba\AppData\Roaming\Python\Python313\site-packages\telegram\request\_baserequest.py", line 200, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\Users\derba\AppData\Roaming\Python\Python313\site-packages\telegram\request\_baserequest.py", line 379, in _request_wrapper
+    raise BadRequest(message)
+telegram.error.BadRequest: Chat not found
+
+2025-05-01 03:30:38,909 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 03:30:39,061 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:30:39,938 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:30:39,944 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:31:00,852 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 03:31:00,928 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:31:01,743 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:31:01,749 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:31:06,621 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 03:31:06,699 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:31:07,547 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:31:07,555 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:31:27,438 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:31:27,438 - __main__ - INFO - Received webhook signal: BTCUSDT/long/open
+2025-05-01 03:31:27,439 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:31:27] "POST /webhook HTTP/1.1" 200 -
+2025-05-01 03:31:27,440 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:31:27,441 - __main__ - ERROR - Error executing trade: 'str' object has no attribute 'items'
+2025-05-01 03:31:27,444 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:31:28,839 - __main__ - INFO - Sending telegram with chat_id: 1002515104830
+2025-05-01 03:31:29,697 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7212214739:AAGtBFsx2ULZhqj6RJ9Ytns1_-2sn2GRVu4/sendMessage "HTTP/1.1 400 Bad Request"
+2025-05-01 03:31:29,698 - __main__ - ERROR - Failed to send Telegram notification: Chat not found
+2025-05-01 03:31:29,708 - __main__ - ERROR - Telegram hata detaylarý: Traceback (most recent call last):
+  File "d:\upwork\tonny-web-app\app.py", line 378, in process_signal
+    order_result = bitget_handler.place_order(symbol, side)
+  File "d:\upwork\tonny-web-app\bitget_handler.py", line 130, in place_order
+    balance = self.get_account_balance('USDT')
+  File "d:\upwork\tonny-web-app\bitget_handler.py", line 44, in get_account_balance
+    response = self.account_api.account("umcbl")
+  File "d:\upwork\tonny-web-app\bitget\v1\mix\account_api.py", line 11, in account
+    return self._request_with_params(GET, '/api/mix/v1/account/account', params)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\upwork\tonny-web-app\bitget\client.py", line 83, in _request_with_params
+    return self._request(method, request_path, params, cursor)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\upwork\tonny-web-app\bitget\client.py", line 18, in _request
+    request_path = request_path + utils.parse_params_to_str(params)
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "d:\upwork\tonny-web-app\bitget\utils.py", line 42, in parse_params_to_str
+    params = [(key, val) for key, val in params.items()]
+                                         ^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'items'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "d:\upwork\tonny-web-app\app.py", line 120, in send_telegram_notification
+    await bot.send_message(chat_id=chat_id, text=message)
+  File "C:\Users\derba\AppData\Roaming\Python\Python313\site-packages\telegram\_bot.py", line 542, in decorator
+    result = await func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\derba\AppData\Roaming\Python\Python313\site-packages\telegram\_bot.py", line 1018, in send_message
+    return await self._send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<16 lines>...
+    )
+    ^
+  File "C:\Users\derba\AppData\Roaming\Python\Python313\site-packages\telegram\_bot.py", line 736, in _send_message
+    result = await self._post(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\Users\derba\AppData\Roaming\Python\Python313\site-packages\telegram\_bot.py", line 630, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "C:\Users\derba\AppData\Roaming\Python\Python313\site-packages\telegram\_bot.py", line 658, in _do_post
+    return await request.post(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "C:\Users\derba\AppData\Roaming\Python\Python313\site-packages\telegram\request\_baserequest.py", line 200, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\Users\derba\AppData\Roaming\Python\Python313\site-packages\telegram\request\_baserequest.py", line 379, in _request_wrapper
+    raise BadRequest(message)
+telegram.error.BadRequest: Chat not found
+
+2025-05-01 03:31:29,713 - __main__ - ERROR - Telegram bilgilerinizi kontrol edin. Bot token: 72122... ve Chat ID: 1002515104830
+2025-05-01 03:31:29,714 - __main__ - ERROR - Telegram botunuzla bir kez mesajlaþtýðýnýzdan veya botu gruba eklediðinizden emin olun.
+2025-05-01 03:32:08,265 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 03:32:08,401 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:32:09,247 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:32:09,252 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:33:01,629 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\test\\telegram_test.py', reloading
+2025-05-01 03:33:01,712 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:33:02,773 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:33:02,780 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:34:00,820 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 03:34:00,898 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:34:01,708 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:34:01,713 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:34:04,668 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 03:34:04,745 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:34:05,566 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:34:05,572 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:34:30,586 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:34:30,587 - __main__ - INFO - Received webhook signal: BTCUSDT/long/open
+2025-05-01 03:34:30,588 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:34:30] "POST /webhook HTTP/1.1" 200 -
+2025-05-01 03:34:30,589 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:34:31,239 - bitget_handler - ERROR - Failed to get account balance: API Request Error(code=400172): Parameter verification failed
+2025-05-01 03:34:31,242 - bitget_handler - ERROR - Insufficient balance to place order
+2025-05-01 03:35:36,184 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 03:35:36,280 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:35:37,341 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:35:37,345 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:35:43,643 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:35:43,644 - __main__ - INFO - Received webhook signal: BTCUSDT/long/open
+2025-05-01 03:35:43,645 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:35:43] "POST /webhook HTTP/1.1" 200 -
+2025-05-01 03:35:43,645 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:35:44,254 - __main__ - ERROR - Error executing trade: 'MarketApi' object has no attribute 'detail'
+2025-05-01 03:35:44,256 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:35:45,669 - __main__ - INFO - Sending telegram with chat_id: -1002515104830
+2025-05-01 03:35:46,516 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7212214739:AAGtBFsx2ULZhqj6RJ9Ytns1_-2sn2GRVu4/sendMessage "HTTP/1.1 200 OK"
+2025-05-01 03:36:03,830 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 03:36:03,973 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:36:04,937 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:36:04,942 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:36:25,476 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:36:25,476 - __main__ - INFO - Received webhook signal: BTCUSDT/long/open
+2025-05-01 03:36:25,477 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:36:25] "POST /webhook HTTP/1.1" 200 -
+2025-05-01 03:36:25,477 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:36:26,100 - bitget_handler - ERROR - Failed to place order: 'MarketApi' object has no attribute 'detail'
+2025-05-01 03:36:26,103 - bitget_handler - ERROR - Order placement error details: Traceback (most recent call last):
+  File "d:\upwork\tonny-web-app\bitget_handler.py", line 145, in place_order
+    current_price = self.get_symbol_price(symbol)
+  File "d:\upwork\tonny-web-app\bitget_handler.py", line 80, in get_symbol_price
+    response = self.market_api.detail(symbol)
+               ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'MarketApi' object has no attribute 'detail'
+
+2025-05-01 03:36:45,259 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 03:36:45,337 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:36:46,150 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:36:46,155 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:37:01,804 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 03:37:01,884 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:37:02,926 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:37:02,931 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:37:38,740 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 03:37:38,817 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:37:39,636 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:37:39,643 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:37:42,719 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 03:37:42,801 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:37:43,620 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:37:43,625 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:38:08,099 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 03:38:08,194 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:38:09,023 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:38:09,028 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:38:15,920 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 03:38:16,001 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:38:16,817 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:38:16,824 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:38:41,325 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 03:38:41,418 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:38:42,306 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:38:42,312 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:38:57,315 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 03:38:57,391 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:38:58,180 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:38:58,186 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:39:41,483 - __main__ - INFO - Received webhook data: {'signal': 'BTCUSDT/long/open'}
+2025-05-01 03:39:41,484 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:39:41,485 - __main__ - INFO - Found signal in 'signal' field: BTCUSDT/long/open
+2025-05-01 03:39:41,485 - __main__ - INFO - Received webhook signal: BTCUSDT/long/open
+2025-05-01 03:39:41,486 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:39:41] "POST /webhook HTTP/1.1" 200 -
+2025-05-01 03:39:41,487 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:39:42,730 - bitget_handler - ERROR - Failed to set leverage: 'AccountApi' object has no attribute 'leverage'
+2025-05-01 03:39:42,731 - bitget_handler - INFO - Placing open_long order for BTCUSDT_UMCBL, size: 0.001, params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT', 'size': '0.001', 'side': 'buy', 'orderType': 'market'}
+2025-05-01 03:39:43,347 - bitget_handler - ERROR - Failed to place order: API Request Error(code=400172): side mismatch
+2025-05-01 03:39:43,351 - bitget_handler - ERROR - Order placement error details: Traceback (most recent call last):
+  File "d:\upwork\tonny-web-app\bitget_handler.py", line 185, in place_order
+    response = self.order_api.placeOrder(params)
+  File "d:\upwork\tonny-web-app\bitget\v1\mix\order_api.py", line 11, in placeOrder
+    return self._request_with_params(POST, '/api/mix/v1/order/placeOrder', params)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\upwork\tonny-web-app\bitget\client.py", line 83, in _request_with_params
+    return self._request(method, request_path, params, cursor)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\upwork\tonny-web-app\bitget\client.py", line 62, in _request
+    raise exceptions.BitgetAPIException(response)
+bitget.exceptions.BitgetAPIException: API Request Error(code=400172): side mismatch
+
+2025-05-01 03:42:05,433 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 03:42:05,511 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:42:06,344 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:42:06,349 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:58:15,793 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 03:58:15,879 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:58:16,723 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:58:16,728 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:58:19,721 - __main__ - INFO - Received webhook data: {'signal': 'BTCUSDT/long/open'}
+2025-05-01 03:58:19,722 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:58:19,722 - __main__ - INFO - Found signal in 'signal' field: BTCUSDT/long/open
+2025-05-01 03:58:19,723 - __main__ - INFO - Received webhook signal: BTCUSDT/long/open
+2025-05-01 03:58:19,724 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:58:19] "POST /webhook HTTP/1.1" 200 -
+2025-05-01 03:58:19,724 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:58:21,616 - bitget_handler - INFO - Placing open_long order for BTCUSDT_UMCBL, size: 0.001, params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT', 'size': '0.001', 'side': 'open_long', 'orderType': 'market'}
+2025-05-01 03:58:22,212 - bitget_handler - INFO - Order placed successfully: {'code': '00000', 'msg': 'success', 'requestTime': 1746039502461, 'data': {'clientOid': '1301549497364135936', 'orderId': '1301549497351553024'}}
+2025-05-01 03:58:22,217 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:58:23,745 - __main__ - INFO - Sending telegram with chat_id: -1002515104830
+2025-05-01 03:58:24,714 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7212214739:AAGtBFsx2ULZhqj6RJ9Ytns1_-2sn2GRVu4/sendMessage "HTTP/1.1 200 OK"
+2025-05-01 03:58:24,726 - __main__ - INFO - Successfully opened long position for BTCUSDT
+2025-05-01 03:59:04,207 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:59:04,242 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:59:04] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 03:59:19,323 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:59:19] "GET /history HTTP/1.1" 200 -
+2025-05-01 03:59:21,870 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:59:21] "GET /history HTTP/1.1" 200 -
+2025-05-01 03:59:23,024 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:59:23] "GET /history HTTP/1.1" 200 -
+2025-05-01 03:59:23,951 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 03:59:23,953 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 03:59:23] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 03:59:24,857 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 03:59:25,002 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:59:25,876 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:59:25,882 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 03:59:45,191 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 03:59:45,282 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 03:59:46,329 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 03:59:46,334 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 04:00:16,478 - __main__ - INFO - Received webhook data: {'signal': 'BTCUSDT/long/open'}
+2025-05-01 04:00:16,479 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:00:16,480 - __main__ - INFO - Found signal in 'signal' field: BTCUSDT/long/open
+2025-05-01 04:00:16,480 - __main__ - INFO - Received webhook signal: BTCUSDT/long/open
+2025-05-01 04:00:16,481 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:00:16] "POST /webhook HTTP/1.1" 200 -
+2025-05-01 04:00:16,482 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:00:18,580 - bitget_handler - INFO - Placing open_long order for BTCUSDT_UMCBL, size: 0.001, params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT', 'size': '0.001', 'side': 'open_long', 'orderType': 'market'}
+2025-05-01 04:00:19,203 - bitget_handler - INFO - Order placed successfully: {'code': '00000', 'msg': 'success', 'requestTime': 1746039619458, 'data': {'clientOid': '1301549988080926720', 'orderId': '1301549988076732421'}}
+2025-05-01 04:00:19,204 - __main__ - INFO - Order result data: {'clientOid': '1301549988080926720', 'orderId': '1301549988076732421'}
+2025-05-01 04:00:19,783 - __main__ - INFO - Using current market price for BTCUSDT: 94081.8
+2025-05-01 04:00:19,786 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:00:20,400 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:00:20,447 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:00:20] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:00:21,305 - __main__ - INFO - Sending telegram with chat_id: -1002515104830
+2025-05-01 04:00:22,255 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7212214739:AAGtBFsx2ULZhqj6RJ9Ytns1_-2sn2GRVu4/sendMessage "HTTP/1.1 200 OK"
+2025-05-01 04:00:22,267 - __main__ - INFO - Successfully opened long position for BTCUSDT
+2025-05-01 04:01:18,676 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:01:18,679 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:01:18] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:01:21,230 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:01:21,232 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:01:21] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:01:21,969 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:01:21,971 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:01:21] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:01:33,225 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 04:01:33,368 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 04:01:34,186 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 04:01:34,192 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 04:01:37,542 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 04:01:37,616 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 04:01:38,430 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 04:01:38,436 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 04:02:00,106 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:02:00,140 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:02:00] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:02:03,762 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:02:03] "[33mPOST /close_position HTTP/1.1[0m" 404 -
+2025-05-01 04:02:19,217 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 04:02:19,330 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 04:02:20,285 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 04:02:20,290 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 04:02:25,112 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:02:25] "[32mPOST /close_position HTTP/1.1[0m" 302 -
+2025-05-01 04:02:25,119 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:02:25,145 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:02:25] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:02:28,845 - __main__ - INFO - Closing position 1301549497351553024 for BTCUSDT (long) from dashboard
+2025-05-01 04:02:30,079 - bitget_handler - INFO - Calculated order size for BTC: 0.001 BTC ($4.6521499529999994 USD)
+2025-05-01 04:02:30,824 - bitget_handler - INFO - Placing close_long order for BTCUSDT_UMCBL, size: 0.001, params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT', 'size': '0.001', 'side': 'close_long', 'orderType': 'market'}
+2025-05-01 04:02:31,454 - bitget_handler - INFO - Order placed successfully: {'code': '00000', 'msg': 'success', 'requestTime': 1746039751716, 'data': {'clientOid': '1301550542798602240', 'orderId': '1301550542794407939'}}
+2025-05-01 04:02:31,455 - __main__ - INFO - Close order result data: {'clientOid': '1301550542798602240', 'orderId': '1301550542794407939'}
+2025-05-01 04:02:32,207 - __main__ - INFO - Using current market price for close BTCUSDT: 94050.5
+2025-05-01 04:02:32,210 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:02:34,130 - __main__ - INFO - Sending telegram with chat_id: -1002515104830
+2025-05-01 04:02:34,978 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7212214739:AAGtBFsx2ULZhqj6RJ9Ytns1_-2sn2GRVu4/sendMessage "HTTP/1.1 200 OK"
+2025-05-01 04:02:34,999 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:02:34] "[32mPOST /close_position HTTP/1.1[0m" 302 -
+2025-05-01 04:02:35,004 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:02:35,020 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:02:35] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:02:51,535 - __main__ - INFO - Closing position 1301549988076732421 for BTCUSDT (long) from dashboard
+2025-05-01 04:02:52,771 - bitget_handler - INFO - Calculated order size for BTC: 0.001 BTC ($4.8101805318 USD)
+2025-05-01 04:02:53,336 - bitget_handler - INFO - Placing close_long order for BTCUSDT_UMCBL, size: 0.001, params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT', 'size': '0.001', 'side': 'close_long', 'orderType': 'market'}
+2025-05-01 04:02:53,908 - bitget_handler - INFO - Order placed successfully: {'code': '00000', 'msg': 'success', 'requestTime': 1746039774159, 'data': {'clientOid': '1301550636927172658', 'orderId': '1301550636927172633'}}
+2025-05-01 04:02:53,909 - __main__ - INFO - Close order result data: {'clientOid': '1301550636927172658', 'orderId': '1301550636927172633'}
+2025-05-01 04:02:54,517 - __main__ - INFO - Using current market price for close BTCUSDT: 94041.7
+2025-05-01 04:02:54,520 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:02:55,391 - __main__ - INFO - Sending telegram with chat_id: -1002515104830
+2025-05-01 04:02:56,202 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7212214739:AAGtBFsx2ULZhqj6RJ9Ytns1_-2sn2GRVu4/sendMessage "HTTP/1.1 200 OK"
+2025-05-01 04:02:56,221 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:02:56] "[32mPOST /close_position HTTP/1.1[0m" 302 -
+2025-05-01 04:02:56,226 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:02:56,240 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:02:56] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:03:34,242 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 04:03:34,411 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 04:03:35,357 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 04:03:35,362 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 04:03:36,815 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 04:03:36,891 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 04:03:37,704 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 04:03:37,709 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 04:03:43,401 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:03:44,175 - __main__ - INFO - Account balance: 82.79512362 USDT
+2025-05-01 04:03:44,200 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:03:44] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:04:03,958 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:04:04,653 - __main__ - INFO - Account balance: 82.79512362 USDT
+2025-05-01 04:04:04,670 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:04:04] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:04:23,252 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:04:23] "[35m[1mGET /history HTTP/1.1[0m" 500 -
+2025-05-01 04:04:23,355 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:04:23] "GET /history?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2025-05-01 04:04:23,362 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:04:23] "GET /history?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2025-05-01 04:04:23,400 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:04:23] "GET /history?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2025-05-01 04:04:23,416 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:04:23] "[36mGET /history?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-05-01 04:05:11,982 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 04:05:12,066 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 04:05:12,938 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 04:05:12,944 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 04:05:16,124 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\app.py', reloading
+2025-05-01 04:05:16,198 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 04:05:17,063 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 04:05:17,070 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 04:05:20,971 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:05:20] "[35m[1mGET /history HTTP/1.1[0m" 500 -
+2025-05-01 04:05:21,048 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:05:21] "[36mGET /history?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-05-01 04:05:21,053 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:05:21] "[36mGET /history?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-05-01 04:05:21,070 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:05:21] "[36mGET /history?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-05-01 04:05:21,083 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:05:21] "[36mGET /history?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-05-01 04:05:21,880 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:05:21] "[35m[1mGET /history HTTP/1.1[0m" 500 -
+2025-05-01 04:05:21,906 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:05:21] "[36mGET /history?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-05-01 04:05:21,906 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:05:21] "[36mGET /history?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-05-01 04:05:21,925 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:05:21] "[36mGET /history?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-05-01 04:05:21,936 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:05:21] "[36mGET /history?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-05-01 04:06:02,101 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:06:02] "[35m[1mGET /history HTTP/1.1[0m" 500 -
+2025-05-01 04:06:02,124 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:06:02] "[36mGET /history?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-05-01 04:06:02,131 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:06:02] "[36mGET /history?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-05-01 04:06:02,141 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:06:02] "[36mGET /history?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-05-01 04:06:02,152 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:06:02] "[36mGET /history?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-05-01 04:06:03,027 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:06:03] "[35m[1mGET /history HTTP/1.1[0m" 500 -
+2025-05-01 04:06:03,050 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:06:03] "[36mGET /history?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-05-01 04:06:03,050 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:06:03] "[36mGET /history?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-05-01 04:06:03,062 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:06:03] "[36mGET /history?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-05-01 04:06:03,078 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:06:03] "[36mGET /history?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-05-01 04:08:22,368 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:08:22] "GET /history HTTP/1.1" 200 -
+2025-05-01 04:09:13,248 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:09:13] "GET /history HTTP/1.1" 200 -
+2025-05-01 04:09:16,241 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:09:17,071 - __main__ - INFO - Account balance: 82.79512362 USDT
+2025-05-01 04:09:17,086 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:09:17] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:09:28,846 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:09:28] "GET /history HTTP/1.1" 200 -
+2025-05-01 04:09:41,374 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:09:41] "GET /history HTTP/1.1" 200 -
+2025-05-01 04:10:10,064 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:10:10] "GET /history HTTP/1.1" 200 -
+2025-05-01 04:10:40,400 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:10:40,408 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:10:40] "GET /settings HTTP/1.1" 200 -
+2025-05-01 04:10:46,701 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:10:46] "GET /history HTTP/1.1" 200 -
+2025-05-01 04:11:24,666 - werkzeug - INFO -  * Detected change in 'd:\\upwork\\tonny-web-app\\bitget_handler.py', reloading
+2025-05-01 04:11:24,787 - werkzeug - INFO -  * Restarting with stat
+2025-05-01 04:11:25,718 - werkzeug - WARNING -  * Debugger is active!
+2025-05-01 04:11:25,724 - werkzeug - INFO -  * Debugger PIN: 279-670-900
+2025-05-01 04:11:30,453 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:11:30] "GET /history HTTP/1.1" 200 -
+2025-05-01 04:11:32,656 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:11:32] "GET /history HTTP/1.1" 200 -
+2025-05-01 04:11:35,795 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:11:36,440 - __main__ - INFO - Account balance: 82.79512362 USDT
+2025-05-01 04:11:36,453 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:11:36] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:11:47,877 - __main__ - INFO - Received webhook data: {'signal': 'BTCUSDT/short/open'}
+2025-05-01 04:11:47,878 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:11:47,878 - __main__ - INFO - Found signal in 'signal' field: BTCUSDT/short/open
+2025-05-01 04:11:47,879 - __main__ - INFO - Received webhook signal: BTCUSDT/short/open
+2025-05-01 04:11:47,880 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:11:47] "POST /webhook HTTP/1.1" 200 -
+2025-05-01 04:11:47,880 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:11:48,489 - bitget_handler - INFO - Order amount: $4.9677074172 USDT (6.0% of 82.79512362 USDT)
+2025-05-01 04:11:49,204 - bitget_handler - INFO - Calculated order size for BTC: 0.001 BTC ($4.9677074172 USD)
+2025-05-01 04:11:49,806 - bitget_handler - INFO - Placing open_short order for BTCUSDT_UMCBL, size: 0.001, params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT', 'size': '0.001', 'side': 'open_short', 'orderType': 'market'}
+2025-05-01 04:11:50,184 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:11:50,486 - bitget_handler - INFO - Order placed successfully: {'code': '00000', 'msg': 'success', 'requestTime': 1746040310736, 'data': {'clientOid': '1301552887519395840', 'orderId': '1301552887506812930'}}
+2025-05-01 04:11:50,487 - __main__ - INFO - Order result data: {'clientOid': '1301552887519395840', 'orderId': '1301552887506812930'}
+2025-05-01 04:11:50,930 - __main__ - INFO - Account balance: 80.85849702 USDT
+2025-05-01 04:11:50,932 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:11:50] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:11:51,185 - __main__ - INFO - Using current market price for BTCUSDT: 94011.0
+2025-05-01 04:11:51,187 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:11:52,613 - __main__ - INFO - Sending telegram with chat_id: -1002515104830
+2025-05-01 04:11:53,512 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7212214739:AAGtBFsx2ULZhqj6RJ9Ytns1_-2sn2GRVu4/sendMessage "HTTP/1.1 200 OK"
+2025-05-01 04:11:53,530 - __main__ - INFO - Successfully opened short position for BTCUSDT
+2025-05-01 04:11:54,501 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:11:55,121 - __main__ - INFO - Account balance: 80.85849702 USDT
+2025-05-01 04:11:55,123 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:11:55] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:12:08,597 - __main__ - INFO - Received webhook data: {'signal': 'BTCUSDT/short/close'}
+2025-05-01 04:12:08,598 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:12:08,599 - __main__ - INFO - Found signal in 'signal' field: BTCUSDT/short/close
+2025-05-01 04:12:08,599 - __main__ - INFO - Received webhook signal: BTCUSDT/short/close
+2025-05-01 04:12:08,600 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:12:08] "POST /webhook HTTP/1.1" 200 -
+2025-05-01 04:12:08,600 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:12:09,248 - bitget_handler - INFO - Order amount: $4.8515098212 USDT (6.0% of 80.85849702 USDT)
+2025-05-01 04:12:09,900 - bitget_handler - INFO - Calculated order size for BTC: 0.001 BTC ($4.8515098212 USD)
+2025-05-01 04:12:10,564 - bitget_handler - INFO - Placing close_short order for BTCUSDT_UMCBL, size: 0.001, params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT', 'size': '0.001', 'side': 'close_short', 'orderType': 'market'}
+2025-05-01 04:12:11,282 - bitget_handler - INFO - Order placed successfully: {'code': '00000', 'msg': 'success', 'requestTime': 1746040331553, 'data': {'clientOid': '1301552974807056394', 'orderId': '1301552974807056391'}}
+2025-05-01 04:12:11,283 - __main__ - INFO - Close order result data: {'clientOid': '1301552974807056394', 'orderId': '1301552974807056391'}
+2025-05-01 04:12:11,888 - __main__ - INFO - Using current market price for close BTCUSDT: 94042.6
+2025-05-01 04:12:11,891 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:12:12,829 - __main__ - INFO - Sending telegram with chat_id: -1002515104830
+2025-05-01 04:12:13,332 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:12:13,673 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7212214739:AAGtBFsx2ULZhqj6RJ9Ytns1_-2sn2GRVu4/sendMessage "HTTP/1.1 200 OK"
+2025-05-01 04:12:13,685 - __main__ - INFO - Successfully closed short position for BTCUSDT
+2025-05-01 04:12:13,949 - __main__ - INFO - Account balance: 82.9052125 USDT
+2025-05-01 04:12:13,951 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:12:13] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:14:05,524 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:14:06,137 - __main__ - INFO - Account balance: 82.9052125 USDT
+2025-05-01 04:14:06,138 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:14:06] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:14:07,469 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:14:07] "GET /history HTTP/1.1" 200 -
+2025-05-01 04:14:35,827 - bitget_handler - INFO - Bitget handler initialized
+2025-05-01 04:14:36,510 - __main__ - INFO - Account balance: 82.9052125 USDT
+2025-05-01 04:14:36,511 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:14:36] "GET /dashboard HTTP/1.1" 200 -
+2025-05-01 04:15:26,332 - werkzeug - INFO - 127.0.0.1 - - [01/May/2025 04:15:26] "GET /history HTTP/1.1" 200 -

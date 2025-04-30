@@ -108,10 +108,30 @@ async def send_telegram_notification(message):
         try:
             from telegram import Bot
             bot = Bot(token=config.telegram_bot_token)
-            await bot.send_message(chat_id=config.telegram_chat_id, text=message)
+            
+            # Telegram chat_id formatını düzeltme
+            chat_id = config.telegram_chat_id
+            
+            # Eğer chat_id sayısal bir değerse
+            if chat_id.isdigit():
+                # Grup ID'si için negatif değer kullanılması gerekiyor
+                # 1002... ile başlayan ID'ler grup ID'leri, bunları negatife çeviriyoruz
+                if chat_id.startswith("100"):
+                    chat_id = "-" + chat_id
+                    logger.info(f"Converting group ID to negative: {chat_id}")
+            
+            logger.info(f"Sending telegram with chat_id: {chat_id}")
+            await bot.send_message(chat_id=chat_id, text=message)
             logger.info(f"Telegram notification sent: {message}")
         except Exception as e:
             logger.error(f"Failed to send Telegram notification: {str(e)}")
+            # Hata ayıklama için daha detaylı bilgi
+            import traceback
+            logger.error(f"Telegram hata detayları: {traceback.format_exc()}")
+            
+            # Kullanıcıya bilgi vermek için hata mesajı
+            logger.error(f"Telegram bilgilerinizi kontrol edin. Bot token: {config.telegram_bot_token[:5]}... ve Chat ID: {config.telegram_chat_id}")
+            logger.error("Telegram botunuzla bir kez mesajlaştığınızdan veya botu gruba eklediğinizden emin olun.")
 
 # Routes
 @app.route('/')
@@ -158,7 +178,16 @@ def dashboard():
     
     positions = [Position(**pos) for pos in positions_data]
     
-    return render_template('dashboard.html', config=config, positions=positions)
+    # Hesap bakiyesini al
+    account_balance = 0
+    if bitget_handler:
+        try:
+            account_balance = bitget_handler.get_account_balance('USDT')
+            logger.info(f"Account balance: {account_balance} USDT")
+        except Exception as e:
+            logger.error(f"Failed to get account balance: {str(e)}")
+    
+    return render_template('dashboard.html', config=config, positions=positions, account_balance=account_balance)
 
 @app.route('/history')
 @login_required
@@ -167,16 +196,103 @@ def position_history():
     with open('data/positions.json', 'r') as f:
         positions_data = json.load(f)
     
-    # Filter closed positions and convert to Position objects
-    closed_positions = [Position(**pos) for pos in positions_data if pos.get('closed', False)]
+    # Filter closed positions
+    closed_positions_data = [pos for pos in positions_data if pos.get('closed', False)]
     
     # Sort by close time, most recent first
-    closed_positions.sort(key=lambda x: x.close_time, reverse=True)
+    closed_positions_data.sort(key=lambda x: x.get('close_time', ''), reverse=True)
     
-    # Calculate total profit/loss
-    total_pnl = sum(position.calculate_pnl() for position in closed_positions)
+    # Calculate PnL for each position and total
+    total_pnl = 0
+    for pos in closed_positions_data:
+        entry = float(pos.get('entry_price', 0))
+        exit_price = float(pos.get('exit_price', 0))
+        size = float(pos.get('size', 0))
+        direction = pos.get('direction', '')
+        
+        if direction == 'long':
+            pnl = (exit_price - entry) * size
+        else:  # short
+            pnl = (entry - exit_price) * size
+            
+        pos['pnl'] = round(pnl, 2)
+        total_pnl += pnl
     
-    return render_template('history.html', positions=closed_positions, total_pnl=total_pnl)
+    return render_template('history.html', positions=closed_positions_data, total_pnl=round(total_pnl, 2))
+
+@app.route('/close_position', methods=['POST'])
+@login_required
+def close_position():
+    position_id = request.form.get('position_id')
+    symbol = request.form.get('symbol')
+    direction = request.form.get('direction')
+    
+    if not all([position_id, symbol, direction]):
+        flash('Missing position information', 'danger')
+        return redirect(url_for('dashboard'))
+    
+    try:
+        # İşlemi kapat
+        side = f"close_{direction}"
+        if bitget_handler:
+            logger.info(f"Closing position {position_id} for {symbol} ({direction}) from dashboard")
+            order_result = bitget_handler.place_order(symbol, side)
+            
+            # Pozisyonu güncelle
+            with open('data/positions.json', 'r') as f:
+                positions = json.load(f)
+            
+            # Pozisyonu bul
+            position = None
+            for pos in positions:
+                if pos.get('id') == position_id:
+                    position = pos
+                    break
+                    
+            if position and order_result and order_result.get('data', {}).get('orderId'):
+                # Sipariş sonucundan daha fazla bilgi almaya çalışalım
+                logger.info(f"Close order result data: {order_result.get('data', {})}")
+                
+                # Size ve price bilgilerini doğru alanlarda arayalım
+                exit_price = order_result['data'].get('price', '0')
+                avg_price = order_result['data'].get('averagePrice', '0')
+                
+                # Eğer price değeri 0 ise market api ile güncel fiyatı alalım
+                if float(exit_price) <= 0 or exit_price == '0':
+                    current_price = bitget_handler.get_symbol_price(symbol)
+                    exit_price = str(current_price)
+                    logger.info(f"Using current market price for close {symbol}: {exit_price}")
+                
+                # Update position
+                position['closed'] = True
+                position['close_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                position['exit_price'] = exit_price if float(exit_price) > 0 else avg_price
+                
+                # Save updated positions
+                with open('data/positions.json', 'w') as f:
+                    json.dump(positions, f)
+                
+                # Send Telegram notification
+                message = (
+                    f"🔔 {direction.upper()} position manually closed from dashboard\n"
+                    f"Symbol: {symbol}\n"
+                    f"Entry Price: {position['entry_price']}\n"
+                    f"Exit Price: {position['exit_price']}\n"
+                    f"Size: {position['size']}\n"
+                    f"Order ID: {order_result['data']['orderId']}"
+                )
+                asyncio.run(send_telegram_notification(message))
+                
+                flash(f"Successfully closed {direction.upper()} position for {symbol}", 'success')
+            else:
+                flash(f"Failed to close position or position not found", 'danger')
+        else:
+            flash('Bitget handler not initialized', 'danger')
+    except Exception as e:
+        logger.error(f"Error closing position: {str(e)}")
+        flash(f"Error closing position: {str(e)}", 'danger')
+    
+    return redirect(url_for('dashboard'))
 
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
@@ -272,39 +388,82 @@ def webhook():
     if not request.json:
         return jsonify({"status": "error", "message": "Invalid JSON"}), 400
     
+    logger.info(f"Received webhook data: {request.json}")
+    
     config = load_config()
     if not config.enable_trading:
         logger.info("Trading is disabled. Ignoring webhook signal.")
         return jsonify({"status": "error", "message": "Trading is disabled"}), 200
     
     try:
-        signal = request.json.get('signal', '')
+        # Request.json verisinin formatı çeşitli olabilir, tüm formatları destekleyelim
+        signal = None
+        
+        # 1. Webhook test aracından gelen doğrudan 'signal' alanı
+        if 'signal' in request.json:
+            signal = request.json['signal']
+            logger.info(f"Found signal in 'signal' field: {signal}")
+        
+        # 2. TradingView'dan gelen 'strategy.alert_message' formatı
+        elif 'strategy' in request.json and 'alert_message' in request.json['strategy']:
+            signal = request.json['strategy']['alert_message']
+            logger.info(f"Found signal in strategy.alert_message: {signal}")
+        
+        # 3. Doğrudan 'message' veya 'text' alanlarını deneyebiliriz
+        elif 'message' in request.json:
+            signal = request.json['message']
+            logger.info(f"Found signal in 'message' field: {signal}")
+        elif 'text' in request.json:
+            signal = request.json['text']
+            logger.info(f"Found signal in 'text' field: {signal}")
+        
+        # 4. TradingView'dan gelen JSON verisinde text message değeri arıyor olabiliriz
+        elif any('/' in str(val) for val in request.json.values() if isinstance(val, str)):
+            for key, value in request.json.items():
+                if isinstance(value, str) and '/' in value and len(value.split('/')) == 3:
+                    signal = value
+                    logger.info(f"Found signal in '{key}' field: {signal}")
+                    break
+        
         if not signal:
+            logger.error(f"No signal found in webhook data: {request.json}")
             return jsonify({"status": "error", "message": "No signal provided"}), 400
+        
+        # Webhook isteğini logla
+        logger.info(f"Received webhook signal: {signal}")
         
         # Expected format: BTCUSDT/short/open
         parts = signal.split('/')
         if len(parts) != 3:
+            logger.error(f"Invalid signal format: {signal}")
             return jsonify({"status": "error", "message": "Invalid signal format"}), 400
         
         symbol, direction, action = parts
         
         if not symbol or not direction or not action:
+            logger.error(f"Invalid signal components: {signal}")
             return jsonify({"status": "error", "message": "Invalid signal components"}), 400
         
         if direction.lower() not in ['long', 'short']:
+            logger.error(f"Invalid direction: {direction}")
             return jsonify({"status": "error", "message": "Invalid direction"}), 400
         
         if action.lower() not in ['open', 'close']:
+            logger.error(f"Invalid action: {action}")
             return jsonify({"status": "error", "message": "Invalid action"}), 400
         
         # Process the signal in a separate thread to avoid blocking
         threading.Thread(target=process_signal, args=(symbol, direction.lower(), action.lower())).start()
         
-        return jsonify({"status": "success", "message": "Signal received and processing"}), 200
+        return jsonify({
+            "status": "success", 
+            "message": f"Signal received and processing: {symbol}/{direction}/{action}"
+        }), 200
     
     except Exception as e:
         logger.error(f"Error processing webhook: {str(e)}")
+        import traceback
+        logger.error(f"Webhook error details: {traceback.format_exc()}")
         return jsonify({"status": "error", "message": f"Error: {str(e)}"}), 500
 
 def process_signal(symbol, direction, action):
@@ -343,13 +502,28 @@ def process_signal(symbol, direction, action):
             if order_result and order_result.get('data', {}).get('orderId'):
                 order_id = order_result['data']['orderId']
                 
+                # Sipariş sonucundan daha fazla bilgi almaya çalışalım
+                logger.info(f"Order result data: {order_result.get('data', {})}")
+                
+                # Size ve price bilgilerini doğru alanlarda arayalım
+                # Bitget API'sinden dönen yanıta göre uyarlama yapıyoruz
+                size = order_result['data'].get('size', '0')
+                price = order_result['data'].get('price', '0')
+                avg_price = order_result['data'].get('averagePrice', '0')
+                
+                # Eğer price değeri 0 ise market api ile güncel fiyatı alalım
+                if float(price) <= 0 or price == '0':
+                    current_price = bitget_handler.get_symbol_price(symbol)
+                    price = str(current_price)
+                    logger.info(f"Using current market price for {symbol}: {price}")
+                
                 # Save position
                 new_position = {
                     "id": order_id,
                     "symbol": symbol,
                     "direction": direction,
-                    "size": order_result['data'].get('size', '0'),
-                    "entry_price": order_result['data'].get('price', '0'),
+                    "size": size,
+                    "entry_price": price if float(price) > 0 else avg_price,
                     "open_time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                     "closed": False
                 }
@@ -364,7 +538,8 @@ def process_signal(symbol, direction, action):
                     f"🔔 New {direction.upper()} position opened\n"
                     f"Symbol: {symbol}\n"
                     f"Entry Price: {new_position['entry_price']}\n"
-                    f"Size: {new_position['size']}"
+                    f"Size: {new_position['size']}\n"
+                    f"Order ID: {order_id}"
                 )
                 asyncio.run(send_telegram_notification(message))
                 
@@ -389,10 +564,23 @@ def process_signal(symbol, direction, action):
                 order_result = bitget_handler.place_order(symbol, side)
                 
                 if order_result and order_result.get('data', {}).get('orderId'):
+                    # Sipariş sonucundan daha fazla bilgi almaya çalışalım
+                    logger.info(f"Close order result data: {order_result.get('data', {})}")
+                    
+                    # Size ve price bilgilerini doğru alanlarda arayalım
+                    exit_price = order_result['data'].get('price', '0')
+                    avg_price = order_result['data'].get('averagePrice', '0')
+                    
+                    # Eğer price değeri 0 ise market api ile güncel fiyatı alalım
+                    if float(exit_price) <= 0 or exit_price == '0':
+                        current_price = bitget_handler.get_symbol_price(symbol)
+                        exit_price = str(current_price)
+                        logger.info(f"Using current market price for close {symbol}: {exit_price}")
+                    
                     # Update position
                     position['closed'] = True
                     position['close_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    position['exit_price'] = order_result['data'].get('price', '0')
+                    position['exit_price'] = exit_price if float(exit_price) > 0 else avg_price
                     
                     # Save updated positions
                     with open('data/positions.json', 'w') as f:
@@ -404,7 +592,8 @@ def process_signal(symbol, direction, action):
                         f"Symbol: {symbol}\n"
                         f"Entry Price: {position['entry_price']}\n"
                         f"Exit Price: {position['exit_price']}\n"
-                        f"Size: {position['size']}"
+                        f"Size: {position['size']}\n"
+                        f"Order ID: {order_result['data']['orderId']}"
                     )
                     asyncio.run(send_telegram_notification(message))
                     

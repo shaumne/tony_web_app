@@ -1,0 +1,56 @@
+//@version=5
+strategy("EMA + MACD Crossover Strategy", overlay=true, pyramiding=0, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+
+// Parameter definitions
+fastEMA = input(9, "Fast EMA Period")
+slowEMA = input(21, "Slow EMA Period")
+macdFast = input(12, "MACD Fast Period")
+macdSlow = input(26, "MACD Slow Period")
+macdSignal = input(9, "MACD Signal Period")
+atrPeriod = input(14, "ATR Period")
+atrMultiplierSL = input.float(1.5, "ATR Stop Loss Multiplier", minval=0.5, maxval=3, step=0.1)
+atrMultiplierTP = input.float(2.5, "ATR Take Profit Multiplier", minval=1, maxval=5, step=0.1)
+
+// EMA Calculations
+ema9 = ta.ema(close, fastEMA)
+ema21 = ta.ema(close, slowEMA)
+ema_crossover = ta.crossover(ema9, ema21)
+ema_crossunder = ta.crossunder(ema9, ema21)
+
+// MACD Calculations
+[macdLine, signalLine, _] = ta.macd(close, macdFast, macdSlow, macdSignal)
+macd_crossover = ta.crossover(macdLine, signalLine)
+macd_crossunder = ta.crossunder(macdLine, signalLine)
+
+// ATR Calculation
+atr = ta.atr(atrPeriod)
+
+// Simple signal conditions - based on EMA and MACD crossovers
+longCondition = ema_crossover and macd_crossover
+shortCondition = ema_crossunder and macd_crossunder
+
+// Signal generation
+if (longCondition)
+    strategy.entry("Long", strategy.long)
+    alert("BTCUSDT/long/open", alert.freq_once_per_bar_close)
+
+if (shortCondition)
+    strategy.entry("Short", strategy.short)
+    alert("BTCUSDT/short/open", alert.freq_once_per_bar_close)
+
+// Position closing conditions
+if (ema_crossunder and strategy.position_size > 0)
+    strategy.close("Long")
+    alert("BTCUSDT/long/close", alert.freq_once_per_bar_close)
+
+if (ema_crossover and strategy.position_size < 0)
+    strategy.close("Short")
+    alert("BTCUSDT/short/close", alert.freq_once_per_bar_close)
+
+// Stop Loss and Take Profit
+strategy.exit("TP-SL Long", "Long", stop=strategy.position_avg_price - atrMultiplierSL * atr, limit=strategy.position_avg_price + atrMultiplierTP * atr)
+strategy.exit("TP-SL Short", "Short", stop=strategy.position_avg_price + atrMultiplierSL * atr, limit=strategy.position_avg_price - atrMultiplierTP * atr)
+
+// Strategy Visualization
+plot(ema9, "Fast EMA", color=color.blue)
+plot(ema21, "Slow EMA", color=color.red)
