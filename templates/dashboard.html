@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Trading Bot{% endblock %}
+
+{% block extra_css %}
+<style>
+    .status-badge {
+        padding: 0.5em 0.8em;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.9em;
+    }
+    
+    .status-active {
+        background-color: rgba(76, 201, 240, 0.15);
+        color: var(--success-color);
+    }
+    
+    .status-inactive {
+        background-color: rgba(255, 90, 95, 0.15);
+        color: var(--danger-color);
+    }
+    
+    .stats-card {
+        border-radius: 1rem;
+        overflow: hidden;
+        border: 1px solid #374151;
+        transition: all 0.3s ease;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    }
+    
+    .stats-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+    
+    .stats-value {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stats-label {
+        color: #9ca3af;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .profit {
+        color: var(--success-color);
+    }
+    
+    .loss {
+        color: var(--danger-color);
+    }
+    
+    .position-table th {
+        white-space: nowrap;
+    }
+    
+    .position-table td {
+        vertical-align: middle;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+    
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        color: #4b5563;
+    }
+    
+    .empty-state-message {
+        font-size: 1rem;
+        color: #9ca3af;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .webhook-card {
+        background-color: #111827;
+        border: 1px solid #374151;
+    }
+    
+    .webhook-url {
+        background-color: #1f2937;
+        border-color: #374151;
+        color: #e5e7eb;
+        font-family: monospace;
+    }
+    
+    pre.json-example {
+        background-color: #111827;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        color: #e5e7eb;
+        font-family: monospace;
+        border: 1px solid #374151;
+    }
+    
+    .toggle-icon {
+        transition: transform 0.3s ease;
+    }
+    
+    .collapsed .toggle-icon {
+        transform: rotate(-180deg);
+    }
+    
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .card-header h5 {
+        margin: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1 class="page-title">Dashboard</h1>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card h-100">
+            <div class="card-body text-center p-4">
+                <i class="fas fa-toggle-on stats-icon {% if config.enable_trading %}text-success{% else %}text-danger{% endif %}"></i>
+                <div class="stats-value">
+                    <span class="status-badge {% if config.enable_trading %}status-active{% else %}status-inactive{% endif %}">
+                        {% if config.enable_trading %}Active{% else %}Inactive{% endif %}
+                    </span>
+                </div>
+                <div class="stats-label">Trading Status</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card h-100">
+            <div class="card-body text-center p-4">
+                <i class="fas fa-chart-line stats-icon"></i>
+                <div class="stats-value">
+                    {{ positions|selectattr('closed', 'equalto', false)|list|length }} <span class="text-muted" style="font-size: 1rem;">/ {{ config.max_open_positions }}</span>
+                </div>
+                <div class="stats-label">Open Positions</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card h-100">
+            <div class="card-body text-center p-4">
+                <i class="fas fa-coins stats-icon"></i>
+                <div class="stats-value">{{ config.order_size_percentage }}%</div>
+                <div class="stats-label">Order Size</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card h-100">
+            <div class="card-body text-center p-4">
+                <i class="fas fa-bolt stats-icon"></i>
+                <div class="stats-value">{{ config.leverage }}x</div>
+                <div class="stats-label">Leverage</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Positions -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-exchange-alt me-2"></i>Active Trading Positions</h5>
+                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#positionsCollapse">
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </button>
+            </div>
+            <div class="collapse show" id="positionsCollapse">
+                <div class="card-body p-0">
+                    {% set open_positions = positions|selectattr('closed', 'equalto', false)|list %}
+                    {% if open_positions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover position-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Type</th>
+                                        <th>Entry Price</th>
+                                        <th>Size</th>
+                                        <th>Open Time</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for position in open_positions|sort(attribute='open_time', reverse=true) %}
+                                    <tr>
+                                        <td>{{ position.symbol }}</td>
+                                        <td>
+                                            {% if position.direction == 'long' %}
+                                            <span class="badge bg-success">LONG</span>
+                                            {% else %}
+                                            <span class="badge bg-danger">SHORT</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ position.entry_price }}</td>
+                                        <td>{{ position.size }}</td>
+                                        <td>{{ position.open_time }}</td>
+                                        <td>
+                                            <span class="badge bg-primary">OPEN</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-chart-line empty-state-icon"></i>
+                            <p class="empty-state-message">No active positions found. Positions will appear here after receiving trading signals.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Webhook Info -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-code me-2"></i>Webhook Information</h5>
+                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#webhookInfoCollapse">
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </button>
+            </div>
+            <div class="collapse show" id="webhookInfoCollapse">
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>TradingView Webhook Setup</h5>
+                        <p class="mb-3">Configure your TradingView alert to send a POST request to:</p>
+                        <div class="input-group mb-4">
+                            <input type="text" class="form-control webhook-url" id="webhookUrl" value="{{ request.url_root }}webhook" readonly>
+                            <button class="btn btn-outline-primary" type="button" onclick="copyWebhookUrl()">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        
+                        <h5 class="mb-3 mt-4">Webhook Format</h5>
+                        <p class="mb-3">Your TradingView alert message should follow this format:</p>
+                        <pre class="json-example mb-4"><code>{
+    "signal": "BTCUSDT/long/open"
+}</code></pre>
+                        <p class="mb-2">Where:</p>
+                        <ul>
+                            <li><code>BTCUSDT</code> is the trading pair</li>
+                            <li><code>long</code> or <code>short</code> is the direction</li>
+                            <li><code>open</code> or <code>close</code> is the action</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyWebhookUrl() {
+    var webhookUrl = document.getElementById("webhookUrl");
+    webhookUrl.select();
+    document.execCommand("copy");
+    
+    // Show a temporary tooltip
+    var btn = webhookUrl.nextElementSibling;
+    var originalHtml = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    setTimeout(function() {
+        btn.innerHTML = originalHtml;
+    }, 2000);
+}
+
+// Add event listeners for collapse buttons to animate the icon
+document.addEventListener('DOMContentLoaded', function() {
+    const collapseButtons = document.querySelectorAll('[data-bs-toggle="collapse"]');
+    
+    collapseButtons.forEach(button => {
+        const target = document.querySelector(button.getAttribute('data-bs-target'));
+        
+        target.addEventListener('hide.bs.collapse', function() {
+            button.classList.add('collapsed');
+        });
+        
+        target.addEventListener('show.bs.collapse', function() {
+            button.classList.remove('collapsed');
+        });
+    });
+});
+</script>
+{% endblock %} 

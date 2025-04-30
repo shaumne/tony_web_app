@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Trading Bot{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-card {
+        border-radius: 1rem;
+        overflow: hidden;
+        border: 1px solid #374151;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background-color: #1f2937;
+    }
+    
+    .login-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.2), 0 15px 15px -5px rgba(0, 0, 0, 0.15);
+    }
+    
+    .login-header {
+        background-color: #374151;
+        padding: 1.5rem;
+        border-bottom: 1px solid #4b5563;
+    }
+    
+    .login-header h4 {
+        margin: 0;
+        color: #e5e7eb;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .login-body {
+        padding: 2rem;
+    }
+    
+    .login-icon {
+        font-size: 1.5rem;
+        background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .form-control {
+        background-color: #374151;
+        border: 1px solid #4b5563;
+        color: #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-control:focus {
+        background-color: #374151;
+        border-color: var(--primary-color);
+        color: #e5e7eb;
+        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+    }
+    
+    .form-label {
+        color: #e5e7eb;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .input-group-text {
+        background-color: #4b5563;
+        border: 1px solid #4b5563;
+        color: #e5e7eb;
+    }
+    
+    .btn-login {
+        background: linear-gradient(to right, var(--primary-dark), var(--primary-color));
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-login:hover {
+        background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+    
+    @media (max-width: 767px) {
+        .login-body {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="login-card mt-5">
+            <div class="login-header text-center">
+                <h4><i class="fas fa-robot login-icon me-2"></i>Login</h4>
+            </div>
+            <div class="login-body">
+                <form method="post">
+                    <div class="mb-4">
+                        <label for="username" class="form-label">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="text" class="form-control" id="username" name="username" required autocomplete="username" placeholder="Enter your username">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password">
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-login">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

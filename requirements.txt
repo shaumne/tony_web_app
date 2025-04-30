@@ -1,0 +1,10 @@
+Flask==2.3.3
+Flask-Login==0.6.2
+Flask-WTF==1.1.1
+python-telegram-bot==20.8
+requests==2.31.0
+python-dotenv==1.0.0
+Werkzeug==2.3.7
+gunicorn==21.2.0
+websocket-client==1.6.1
+pycryptodome==3.18.0 

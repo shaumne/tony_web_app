@@ -1,0 +1,1 @@
+{"bitget_api_key": "", "bitget_secret_key": "", "bitget_passphrase": "", "telegram_bot_token": "", "telegram_chat_id": "", "leverage": 20, "order_size_percentage": 10.0, "max_daily_trades": 10, "max_open_positions": 3, "enable_trading": true}

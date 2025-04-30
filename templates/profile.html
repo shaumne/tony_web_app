@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil - Trading Bot{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-card {
+        border-radius: 1rem;
+        overflow: hidden;
+        border: 1px solid #374151;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        background-color: #1f2937;
+        margin-bottom: 2rem;
+    }
+    
+    .profile-header {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid #374151;
+    }
+    
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: #374151;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1.5rem;
+        color: #e5e7eb;
+        font-size: 2.5rem;
+    }
+    
+    .profile-info h4 {
+        color: #e5e7eb;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .profile-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .badge-admin {
+        background: linear-gradient(45deg, #4361ee, #805dca);
+        color: white;
+    }
+    
+    .badge-user {
+        background-color: #4b5563;
+        color: #e5e7eb;
+    }
+    
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #e5e7eb;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #374151;
+        display: flex;
+        align-items: center;
+    }
+    
+    .section-title i {
+        margin-right: 0.75rem;
+        background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .form-control {
+        background-color: #374151;
+        border: 1px solid #4b5563;
+        color: #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    .form-control:focus {
+        background-color: #374151;
+        border-color: var(--primary-color);
+        color: #e5e7eb;
+        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+    }
+    
+    .form-label {
+        color: #e5e7eb;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-save {
+        background: linear-gradient(to right, var(--primary-dark), var(--primary-color));
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-save:hover {
+        background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+    
+    .input-group-text {
+        background-color: #4b5563;
+        border: 1px solid #4b5563;
+        color: #e5e7eb;
+    }
+    
+    .toggle-password {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .toggle-password:hover {
+        color: var(--primary-light);
+    }
+    
+    .stats-card {
+        background-color: #2a3441;
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+        height: 100%;
+    }
+    
+    .stats-title {
+        color: #9ca3af;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-value {
+        color: #e5e7eb;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1 class="page-title">Profil</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="profile-info">
+                    <h4>{{ current_user.id }}</h4>
+                    {% if current_user.is_admin %}
+                    <span class="profile-badge badge-admin">
+                        <i class="fas fa-shield-alt me-1"></i>Admin
+                    </span>
+                    {% else %}
+                    <span class="profile-badge badge-user">
+                        <i class="fas fa-user me-1"></i>User
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card-body p-4">
+                <!-- Change Password Form -->
+                <div class="settings-section">
+                    <h5 class="section-title"><i class="fas fa-key"></i>Şifre Değiştir</h5>
+                    <form method="post">
+                        <input type="hidden" name="action" value="change_password">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="current_password" class="form-label">Mevcut Şifre</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="current_password" name="current_password" required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button" data-target="current_password">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="new_password" class="form-label">Yeni Şifre</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="new_password" name="new_password" required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button" data-target="new_password">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="confirm_password" class="form-label">Şifreyi Onayla</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button" data-target="confirm_password">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" class="btn btn-save">
+                                <i class="fas fa-save me-2"></i>Şifreyi Güncelle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Account Statistics -->
+                <div class="settings-section">
+                    <h5 class="section-title"><i class="fas fa-chart-line"></i>Hesap İstatistikleri</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="stats-title">Son Giriş</div>
+                                <div class="stats-value">{{ last_login }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="stats-title">Toplam İşlem</div>
+                                <div class="stats-value">{{ trade_count }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="stats-title">Toplam Kar/Zarar</div>
+                                <div class="stats-value">{{ total_pnl }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="stats-title">Hesap Oluşturulma</div>
+                                <div class="stats-value">{{ account_created }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Toggle password visibility
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleButtons = document.querySelectorAll('.toggle-password');
+        
+        toggleButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const inputField = document.getElementById(targetId);
+                const icon = this.querySelector('i');
+                
+                if (inputField.type === 'password') {
+                    inputField.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    inputField.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %} 
