@@ -1,5 +1,5 @@
 //@version=5
-strategy("EMA + MACD Crossover Strategy", overlay=true, pyramiding=0, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+strategy("NEW EMA + MACD Crossover Strategy", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100, initial_capital=10000)
 
 // Parameter definitions
 fastEMA = input(9, "Fast EMA Period")
@@ -8,7 +8,7 @@ macdFast = input(12, "MACD Fast Period")
 macdSlow = input(26, "MACD Slow Period")
 macdSignal = input(9, "MACD Signal Period")
 atrPeriod = input(14, "ATR Period")
-atrMultiplierSL = input.float(1.5, "ATR Stop Loss Multiplier", minval=0.5, maxval=3, step=0.1)
+atrMultiplierSL = input.float(3.0, "ATR Stop Loss Multiplier", minval=0.5, maxval=5, step=0.1)
 atrMultiplierTP = input.float(2.5, "ATR Take Profit Multiplier", minval=1, maxval=5, step=0.1)
 
 // EMA Calculations
@@ -25,32 +25,36 @@ macd_crossunder = ta.crossunder(macdLine, signalLine)
 // ATR Calculation
 atr = ta.atr(atrPeriod)
 
-// Simple signal conditions - based on EMA and MACD crossovers
-longCondition = ema_crossover and macd_crossover
-shortCondition = ema_crossunder and macd_crossunder
+// Signal conditions with both EMA and MACD
+longCondition = ema_crossover and macdLine > signalLine
+shortCondition = ema_crossunder and macdLine < signalLine
 
-// Signal generation
+// Entry conditions - Hem long hem short pozisyon almanın püf noktası "pyramiding" parametresini kaldırmak
 if (longCondition)
     strategy.entry("Long", strategy.long)
-    alert("BTCUSDT/long/open", alert.freq_once_per_bar_close)
 
 if (shortCondition)
     strategy.entry("Short", strategy.short)
-    alert("BTCUSDT/short/open", alert.freq_once_per_bar_close)
 
-// Position closing conditions
-if (ema_crossunder and strategy.position_size > 0)
+// Position close conditions
+// Sadece long pozisyonları kapat
+if (ema_crossunder and macd_crossunder)
     strategy.close("Long")
-    alert("BTCUSDT/long/close", alert.freq_once_per_bar_close)
 
-if (ema_crossover and strategy.position_size < 0)
+// Sadece short pozisyonları kapat
+if (ema_crossover and macd_crossover)
     strategy.close("Short")
-    alert("BTCUSDT/short/close", alert.freq_once_per_bar_close)
 
-// Stop Loss and Take Profit
+// Stop Loss and Take Profit - wider stop loss to avoid early exits
 strategy.exit("TP-SL Long", "Long", stop=strategy.position_avg_price - atrMultiplierSL * atr, limit=strategy.position_avg_price + atrMultiplierTP * atr)
 strategy.exit("TP-SL Short", "Short", stop=strategy.position_avg_price + atrMultiplierSL * atr, limit=strategy.position_avg_price - atrMultiplierTP * atr)
 
 // Strategy Visualization
 plot(ema9, "Fast EMA", color=color.blue)
 plot(ema21, "Slow EMA", color=color.red)
+
+// Webhook alert mesajları
+alertcondition(longCondition, title="Long Entry Signal", message="BTCUSDT/long/open")
+alertcondition(shortCondition, title="Short Entry Signal", message="BTCUSDT/short/open")
+alertcondition(ema_crossunder and macd_crossunder, title="Long Exit Signal", message="BTCUSDT/long/close")
+alertcondition(ema_crossover and macd_crossover, title="Short Exit Signal", message="BTCUSDT/short/close")

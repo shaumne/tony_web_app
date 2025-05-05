@@ -22,7 +22,15 @@ class BitgetHandler:
         self.api_key = api_key
         self.secret_key = secret_key
         self.passphrase = passphrase
-        self.config = config
+        
+        # Eğer config bir dict değilse, nesne özelliklerini dict'e dönüştür
+        if hasattr(config, '__dict__'):
+            self.config = config.__dict__
+        else:
+            self.config = config
+        
+        # Config değerlerini logla
+        logger.info(f"Initialized with config: leverage={self.config.get('leverage', 'not set')}, order_size_percentage={self.config.get('order_size_percentage', 'not set')}")
         
         # Initialize API clients
         self.order_api = order_api.OrderApi(api_key, secret_key, passphrase)
@@ -128,6 +136,14 @@ class BitgetHandler:
             
             # Calculate order size based on percentage
             order_size_percentage = self.config.get('order_size_percentage', 10)
+            # Eğer config bir nesne ise ve float değeri dönüştürmek gerekiyorsa
+            if not isinstance(order_size_percentage, (int, float)):
+                try:
+                    order_size_percentage = float(order_size_percentage)
+                except (TypeError, ValueError):
+                    logger.warning(f"Invalid order_size_percentage value: {order_size_percentage}, using default 10%")
+                    order_size_percentage = 10.0
+            
             order_amount = balance * (order_size_percentage / 100)
             logger.info(f"Order amount: ${order_amount} USDT ({order_size_percentage}% of {balance} USDT)")
             
@@ -158,6 +174,16 @@ class BitgetHandler:
             
             # Set leverage
             leverage = self.config.get('leverage', 5)
+            # Eğer leverage bir nesne ise ve int değeri dönüştürmek gerekiyorsa
+            if not isinstance(leverage, (int, float)):
+                try:
+                    leverage = int(float(leverage))
+                except (TypeError, ValueError):
+                    logger.warning(f"Invalid leverage value: {leverage}, using default 5x")
+                    leverage = 5
+            
+            logger.info(f"Using leverage setting from config: {leverage}x")
+            
             try:
                 # Leverage ayarını base_api ile yapalım
                 for hold_side in ['long', 'short']:
@@ -167,11 +193,13 @@ class BitgetHandler:
                         "leverage": str(leverage),
                         "holdSide": hold_side
                     }
-                    self.base_api.post("/api/mix/v1/account/setLeverage", leverage_params)
-                    logger.info(f"Set leverage to {leverage}x for {hold_side} side")
+                    logger.info(f"Setting leverage to {leverage}x for {formatted_symbol} ({hold_side})")
+                    leverage_response = self.base_api.post("/api/mix/v1/account/setLeverage", leverage_params)
+                    logger.info(f"Leverage response: {leverage_response}")
             except Exception as le:
                 logger.error(f"Failed to set leverage: {str(le)}")
-                # Leverage hatası işlemi engellemez
+                # Kaldıraç hatası varsa, işleme devam etmeyi deneyelim
+                logger.warning(f"Continuing without setting leverage. Will use the existing leverage setting.")
             
             # Bitget API parametreleri
             params = {

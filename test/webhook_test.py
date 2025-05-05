@@ -10,11 +10,21 @@ def send_webhook_signal(webhook_url, signal_type, pair="BTCUSDT", direction="lon
     
     signal_type: "basic" - basit bir payload gönderir (pair/direction/action formatında)
                  "tradingview" - TradingView formatında bir payload gönderir
+                 "pipedream" - Pipedream formatında payload gönderir
     """
     if signal_type == "basic":
         # Flask uygulamasının beklediği formatta signal parametresi
         signal = f"{pair}/{direction}/{action}"
         payload = {"signal": signal}  # app.py'de "signal" anahtarı kullanılıyor
+        headers = {'Content-Type': 'application/json'}
+    elif signal_type == "pipedream":
+        # Pipedream formatında payload
+        # 'buy' action değeri long/open, başka bir değer short/close anlamına gelir
+        pipe_action = "buy" if direction == "long" and action == "open" else "sell"
+        payload = {
+            "symbol": pair,
+            "action": pipe_action
+        }
         headers = {'Content-Type': 'application/json'}
     else:
         # TradingView formatında daha ayrıntılı bir payload
@@ -66,8 +76,8 @@ def send_webhook_signal(webhook_url, signal_type, pair="BTCUSDT", direction="lon
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='TradingView webhook test sinyali gönder')
     parser.add_argument('--url', type=str, required=True, help='Webhook URL\'si')
-    parser.add_argument('--type', type=str, default='basic', choices=['basic', 'tradingview'], 
-                        help='Sinyal tipi (basic veya tradingview)')
+    parser.add_argument('--type', type=str, default='basic', choices=['basic', 'tradingview', 'pipedream'], 
+                        help='Sinyal tipi (basic, tradingview veya pipedream)')
     parser.add_argument('--pair', type=str, default='BTCUSDT', help='İşlem çifti (örn. BTCUSDT)')
     parser.add_argument('--direction', type=str, default='long', choices=['long', 'short'], 
                         help='İşlem yönü (long veya short)')

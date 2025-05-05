@@ -396,52 +396,75 @@ def webhook():
         return jsonify({"status": "error", "message": "Trading is disabled"}), 200
     
     try:
-        # Request.json verisinin formatı çeşitli olabilir, tüm formatları destekleyelim
-        signal = None
+        # Request.json verisinin formatını analiz et
+        data = request.json
+        logger.info(f"Processing webhook data: {data}")
         
-        # 1. Webhook test aracından gelen doğrudan 'signal' alanı
-        if 'signal' in request.json:
-            signal = request.json['signal']
-            logger.info(f"Found signal in 'signal' field: {signal}")
+        # Pipedream formatını kontrol et
+        symbol = data.get("symbol", "")
+        action = data.get("action", "").lower()
         
-        # 2. TradingView'dan gelen 'strategy.alert_message' formatı
-        elif 'strategy' in request.json and 'alert_message' in request.json['strategy']:
-            signal = request.json['strategy']['alert_message']
-            logger.info(f"Found signal in strategy.alert_message: {signal}")
+        # Sembol kontrolü
+        if not symbol:
+            # Eski format kontrolü - BTCUSDT/long/open gibi
+            signal = None
+            
+            # 1. Webhook test aracından gelen doğrudan 'signal' alanı
+            if 'signal' in data:
+                signal = data['signal']
+                logger.info(f"Found signal in 'signal' field: {signal}")
+            
+            # 2. TradingView'dan gelen 'strategy.alert_message' formatı
+            elif 'strategy' in data and 'alert_message' in data['strategy']:
+                signal = data['strategy']['alert_message']
+                logger.info(f"Found signal in strategy.alert_message: {signal}")
+            
+            # 3. Doğrudan 'message' veya 'text' alanlarını deneyebiliriz
+            elif 'message' in data:
+                signal = data['message']
+                logger.info(f"Found signal in 'message' field: {signal}")
+            elif 'text' in data:
+                signal = data['text']
+                logger.info(f"Found signal in 'text' field: {signal}")
+            
+            # 4. TradingView'dan gelen JSON verisinde text message değeri arıyor olabiliriz
+            elif any('/' in str(val) for val in data.values() if isinstance(val, str)):
+                for key, value in data.items():
+                    if isinstance(value, str) and '/' in value and len(value.split('/')) == 3:
+                        signal = value
+                        logger.info(f"Found signal in '{key}' field: {signal}")
+                        break
+            
+            if not signal:
+                logger.error(f"No signal found in webhook data: {data}")
+                return jsonify({"status": "error", "message": "No signal provided"}), 400
+            
+            # Eski format işleme - BTCUSDT/long/open
+            parts = signal.split('/')
+            if len(parts) != 3:
+                logger.error(f"Invalid signal format: {signal}")
+                return jsonify({"status": "error", "message": "Invalid signal format"}), 400
+            
+            symbol, direction, action = parts
+        else:
+            # Pipedream format işleme - symbol ve action alanları
+            # Long/Short ve Open/Close mantığı
+            direction = "long" if action == "buy" else "short"
+            trade_action = "open" if action == "buy" else "close"
+            
+            logger.info(f"Processed Pipedream format - Symbol: {symbol}, Direction: {direction}, Action: {trade_action}")
+            
+            # action değişkenini trade_action olarak değiştir (Pipedream uyumu)
+            action = trade_action
         
-        # 3. Doğrudan 'message' veya 'text' alanlarını deneyebiliriz
-        elif 'message' in request.json:
-            signal = request.json['message']
-            logger.info(f"Found signal in 'message' field: {signal}")
-        elif 'text' in request.json:
-            signal = request.json['text']
-            logger.info(f"Found signal in 'text' field: {signal}")
-        
-        # 4. TradingView'dan gelen JSON verisinde text message değeri arıyor olabiliriz
-        elif any('/' in str(val) for val in request.json.values() if isinstance(val, str)):
-            for key, value in request.json.items():
-                if isinstance(value, str) and '/' in value and len(value.split('/')) == 3:
-                    signal = value
-                    logger.info(f"Found signal in '{key}' field: {signal}")
-                    break
-        
-        if not signal:
-            logger.error(f"No signal found in webhook data: {request.json}")
-            return jsonify({"status": "error", "message": "No signal provided"}), 400
-        
-        # Webhook isteğini logla
-        logger.info(f"Received webhook signal: {signal}")
-        
-        # Expected format: BTCUSDT/short/open
-        parts = signal.split('/')
-        if len(parts) != 3:
-            logger.error(f"Invalid signal format: {signal}")
-            return jsonify({"status": "error", "message": "Invalid signal format"}), 400
-        
-        symbol, direction, action = parts
+        # Semboldeki ".P" ekini temizle
+        if ".P" in symbol:
+            original_symbol = symbol
+            symbol = symbol.replace(".P", "")
+            logger.info(f"Cleaned symbol from {original_symbol} to {symbol}")
         
         if not symbol or not direction or not action:
-            logger.error(f"Invalid signal components: {signal}")
+            logger.error(f"Invalid signal components after processing")
             return jsonify({"status": "error", "message": "Invalid signal components"}), 400
         
         if direction.lower() not in ['long', 'short']:
