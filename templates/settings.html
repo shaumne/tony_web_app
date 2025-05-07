@@ -240,6 +240,136 @@
                         </div>
                     </div>
                     
+                    <!-- Take Profit and Stop Loss Settings -->
+                    <div class="settings-section">
+                        <h5 class="section-title"><i class="fas fa-chart-line"></i>Take Profit & Stop Loss Settings</h5>
+                        <div class="alert alert-info mb-4">
+                            <h6 class="alert-heading mb-2"><i class="fas fa-info-circle me-2"></i>How it works</h6>
+                            <p class="mb-1">When enabled, the system will automatically place TP/SL orders for each new position:</p>
+                            <ul class="mb-0 ps-3">
+                                <li>Take Profit: Price target for securing profits, calculated as a percentage from entry price</li>
+                                <li>Stop Loss: Price limit for minimizing losses, calculated as a percentage from entry price</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <div class="form-check form-switch">
+                                <input type="checkbox" class="form-check-input" id="enable_tp_sl" name="enable_tp_sl" {% if config.enable_tp_sl %}checked{% endif %}>
+                                <label class="form-check-label" for="enable_tp_sl">
+                                    Enable Automatic TP/SL
+                                </label>
+                                <div class="form-text">When enabled, TP/SL orders will be placed automatically with each new position</div>
+                            </div>
+                        </div>
+
+                        <!-- LONG Position Settings -->
+                        <div class="card bg-success bg-opacity-10 border-success mb-4">
+                            <div class="card-header bg-success bg-opacity-25">
+                                <h6 class="mb-0 text-success"><i class="fas fa-arrow-up me-2"></i>LONG Position Settings</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="long_take_profit_percentage" class="form-label">Take Profit Percentage</label>
+                                            <div class="input-group">
+                                                <input type="number" step="0.00001" class="form-control" id="long_take_profit_percentage" 
+                                                       name="long_take_profit_percentage" value="{{ config.long_take_profit_percentage }}" 
+                                                       min="0.00001" max="100" placeholder="{{ config.long_take_profit_percentage }}">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                            <div class="form-text">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                Price will be set to Entry Price + X%
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="long_stop_loss_percentage" class="form-label">Stop Loss Percentage</label>
+                                            <div class="input-group">
+                                                <input type="number" step="0.00001" class="form-control" id="long_stop_loss_percentage" 
+                                                       name="long_stop_loss_percentage" value="{{ config.long_stop_loss_percentage }}" 
+                                                       min="0.00001" max="100" placeholder="{{ config.long_stop_loss_percentage }}">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                            <div class="form-text">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                Price will be set to Entry Price - X%
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SHORT Position Settings -->
+                        <div class="card bg-danger bg-opacity-10 border-danger mb-4">
+                            <div class="card-header bg-danger bg-opacity-25">
+                                <h6 class="mb-0 text-danger"><i class="fas fa-arrow-down me-2"></i>SHORT Position Settings</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="short_take_profit_percentage" class="form-label">Take Profit Percentage</label>
+                                            <div class="input-group">
+                                                <input type="number" step="0.00001" class="form-control" id="short_take_profit_percentage" 
+                                                       name="short_take_profit_percentage" value="{{ config.short_take_profit_percentage }}" 
+                                                       min="0.00001" max="100" placeholder="{{ config.short_take_profit_percentage }}">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                            <div class="form-text">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                Price will be set to Entry Price - X%
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="short_stop_loss_percentage" class="form-label">Stop Loss Percentage</label>
+                                            <div class="input-group">
+                                                <input type="number" step="0.00001" class="form-control" id="short_stop_loss_percentage" 
+                                                       name="short_stop_loss_percentage" value="{{ config.short_stop_loss_percentage }}" 
+                                                       min="0.00001" max="100" placeholder="{{ config.short_stop_loss_percentage }}">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                            <div class="form-text">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                Price will be set to Entry Price + X%
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Example Calculations -->
+                        <div class="alert alert-warning">
+                            <h6 class="alert-heading mb-2"><i class="fas fa-calculator me-2"></i>Example Calculations</h6>
+                            <p class="mb-2">Current BTC Price: $96,977</p>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <strong class="text-success"><i class="fas fa-arrow-up me-1"></i>LONG Position:</strong>
+                                    <ul class="mb-0 ps-3 small">
+                                        <li>Entry: $96,977</li>
+                                        <li>TP: $99,401 (Entry + {{ config.long_take_profit_percentage }}%)</li>
+                                        <li>SL: $95,522 (Entry - {{ config.long_stop_loss_percentage }}%)</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong class="text-danger"><i class="fas fa-arrow-down me-1"></i>SHORT Position:</strong>
+                                    <ul class="mb-0 ps-3 small">
+                                        <li>Entry: $96,977</li>
+                                        <li>TP: $94,553 (Entry - {{ config.short_take_profit_percentage }}%)</li>
+                                        <li>SL: $98,432 (Entry + {{ config.short_stop_loss_percentage }}%)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                         <button type="submit" class="btn btn-save">
                             <i class="fas fa-save me-2"></i>Save Settings

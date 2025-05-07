@@ -31,19 +31,19 @@ shortCondition = ema_crossunder and macdLine < signalLine
 
 // Entry conditions - Hem long hem short pozisyon almanın püf noktası "pyramiding" parametresini kaldırmak
 if (longCondition)
-    strategy.entry("Long", strategy.long)
+strategy.entry("Long", strategy.long)
 
 if (shortCondition)
-    strategy.entry("Short", strategy.short)
+strategy.entry("Short", strategy.short)
 
 // Position close conditions
 // Sadece long pozisyonları kapat
 if (ema_crossunder and macd_crossunder)
-    strategy.close("Long")
+strategy.close("Long")
 
 // Sadece short pozisyonları kapat
 if (ema_crossover and macd_crossover)
-    strategy.close("Short")
+strategy.close("Short")
 
 // Stop Loss and Take Profit - wider stop loss to avoid early exits
 strategy.exit("TP-SL Long", "Long", stop=strategy.position_avg_price - atrMultiplierSL * atr, limit=strategy.position_avg_price + atrMultiplierTP * atr)

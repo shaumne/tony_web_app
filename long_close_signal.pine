@@ -1,0 +1,28 @@
+//@version=5
+indicator("Long Close Signal", overlay=true)
+
+// Parameter definitions
+fastEMA = input(9, "Fast EMA Period")
+slowEMA = input(21, "Slow EMA Period")
+macdFast = input(12, "MACD Fast Period")
+macdSlow = input(26, "MACD Slow Period")
+macdSignal = input(9, "MACD Signal Period")
+
+// EMA Calculations
+ema9 = ta.ema(close, fastEMA)
+ema21 = ta.ema(close, slowEMA)
+ema_crossunder = ta.crossunder(ema9, ema21)
+
+// MACD Calculations
+[macdLine, signalLine, _] = ta.macd(close, macdFast, macdSlow, macdSignal)
+
+// Short açma sinyaliyle tamamen aynı koşullar
+longCloseCondition = ema_crossunder and macdLine < signalLine
+
+// Visualization
+plotshape(longCloseCondition, title="Long Exit", location=location.belowbar, color=color.red, style=shape.triangledown, size=size.small)
+plot(ema9, "Fast EMA", color=color.blue)
+plot(ema21, "Slow EMA", color=color.red)
+
+// Webhook alert mesajı
+alertcondition(longCloseCondition, title="Long Exit Signal", message='{"symbol":"{{ticker}}","side":"long","action":"close"}') 

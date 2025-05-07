@@ -9,6 +9,7 @@ import time
 from datetime import datetime
 import logging
 import sys
+from threading import Thread
 
 from models import User, Config, Position
 from bitget_handler import BitgetHandler
@@ -172,22 +173,51 @@ def logout():
 def dashboard():
     config = load_config()
     
-    # Load positions
-    with open('data/positions.json', 'r') as f:
-        positions_data = json.load(f)
-    
-    positions = [Position(**pos) for pos in positions_data]
-    
-    # Hesap bakiyesini al
+    # Get positions directly from Bitget API
+    positions = []
     account_balance = 0
+    equity = 0
+    unrealized_pnl = 0
+    
     if bitget_handler:
         try:
-            account_balance = bitget_handler.get_account_balance('USDT')
-            logger.info(f"Account balance: {account_balance} USDT")
+            logger.info("Fetching positions from Bitget API...")
+            api_positions = bitget_handler.get_open_positions()
+            
+            if api_positions:
+                logger.info(f"Retrieved {len(api_positions)} positions from API")
+                # Filter out positions with zero size
+                active_positions = [pos for pos in api_positions if float(pos.get('total', '0')) > 0]
+                logger.info(f"Found {len(active_positions)} active positions after filtering")
+                
+                # Format positions for dashboard
+                positions = bitget_handler.update_dashboard_positions(active_positions)
+                logger.info(f"Successfully formatted {len(positions)} positions for dashboard")
+            else:
+                logger.info("No positions returned from API")
+        except Exception as e:
+            logger.error(f"Failed to get positions from Bitget: {str(e)}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            flash('Error retrieving positions from exchange', 'danger')
+        
+        # Get account balance and details
+        try:
+            account_balance, equity, unrealized_pnl = bitget_handler.get_account_balance('USDT')
+            logger.info(f"Account details - Balance: {account_balance} USDT, Equity: {equity} USDT, Unrealized PnL: {unrealized_pnl} USDT")
         except Exception as e:
             logger.error(f"Failed to get account balance: {str(e)}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
     
-    return render_template('dashboard.html', config=config, positions=positions, account_balance=account_balance)
+    return render_template(
+        'dashboard.html',
+        config=config,
+        positions=positions,
+        account_balance=account_balance,
+        equity=equity,
+        unrealized_pnl=unrealized_pnl
+    )
 
 @app.route('/history')
 @login_required
@@ -223,71 +253,39 @@ def position_history():
 @app.route('/close_position', methods=['POST'])
 @login_required
 def close_position():
-    position_id = request.form.get('position_id')
     symbol = request.form.get('symbol')
     direction = request.form.get('direction')
+    size = request.form.get('size')
     
-    if not all([position_id, symbol, direction]):
+    if not all([symbol, direction, size]):
         flash('Missing position information', 'danger')
         return redirect(url_for('dashboard'))
     
     try:
-        # İşlemi kapat
+        # Close the position
         side = f"close_{direction}"
         if bitget_handler:
-            logger.info(f"Closing position {position_id} for {symbol} ({direction}) from dashboard")
-            order_result = bitget_handler.place_order(symbol, side)
+            logger.info(f"Closing position for {symbol} ({direction}) with size {size}")
+            order_result = bitget_handler.place_order(symbol, side, close_size=size)
             
-            # Pozisyonu güncelle
-            with open('data/positions.json', 'r') as f:
-                positions = json.load(f)
-            
-            # Pozisyonu bul
-            position = None
-            for pos in positions:
-                if pos.get('id') == position_id:
-                    position = pos
-                    break
-                    
-            if position and order_result and order_result.get('data', {}).get('orderId'):
-                # Sipariş sonucundan daha fazla bilgi almaya çalışalım
+            if order_result and order_result.get('data', {}).get('orderId'):
+                # Try to get more information from order result
                 logger.info(f"Close order result data: {order_result.get('data', {})}")
-                
-                # Size ve price bilgilerini doğru alanlarda arayalım
-                exit_price = order_result['data'].get('price', '0')
-                avg_price = order_result['data'].get('averagePrice', '0')
-                
-                # Eğer price değeri 0 ise market api ile güncel fiyatı alalım
-                if float(exit_price) <= 0 or exit_price == '0':
-                    current_price = bitget_handler.get_symbol_price(symbol)
-                    exit_price = str(current_price)
-                    logger.info(f"Using current market price for close {symbol}: {exit_price}")
-                
-                # Update position
-                position['closed'] = True
-                position['close_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                position['exit_price'] = exit_price if float(exit_price) > 0 else avg_price
-                
-                # Save updated positions
-                with open('data/positions.json', 'w') as f:
-                    json.dump(positions, f)
                 
                 # Send Telegram notification
                 message = (
                     f"🔔 {direction.upper()} position manually closed from dashboard\n"
                     f"Symbol: {symbol}\n"
-                    f"Entry Price: {position['entry_price']}\n"
-                    f"Exit Price: {position['exit_price']}\n"
-                    f"Size: {position['size']}\n"
+                    f"Size: {size}\n"
                     f"Order ID: {order_result['data']['orderId']}"
                 )
                 asyncio.run(send_telegram_notification(message))
                 
                 flash(f"Successfully closed {direction.upper()} position for {symbol}", 'success')
             else:
-                flash(f"Failed to close position or position not found", 'danger')
+                flash('Failed to close position', 'danger')
         else:
-            flash('Bitget handler not initialized', 'danger')
+            flash('Trading system not initialized', 'danger')
     except Exception as e:
         logger.error(f"Error closing position: {str(e)}")
         flash(f"Error closing position: {str(e)}", 'danger')
@@ -304,6 +302,13 @@ def settings():
     config = load_config()
     
     if request.method == 'POST':
+        # Get TP/SL values from form, use existing values if empty
+        long_tp = request.form.get('long_take_profit_percentage')
+        long_sl = request.form.get('long_stop_loss_percentage')
+        short_tp = request.form.get('short_take_profit_percentage')
+        short_sl = request.form.get('short_stop_loss_percentage')
+        
+        # Use existing values if form fields are empty
         updated_config = {
             "bitget_api_key": request.form.get('bitget_api_key'),
             "bitget_secret_key": request.form.get('bitget_secret_key'),
@@ -314,7 +319,12 @@ def settings():
             "order_size_percentage": float(request.form.get('order_size_percentage', 10)),
             "max_daily_trades": int(request.form.get('max_daily_trades', 10)),
             "max_open_positions": int(request.form.get('max_open_positions', 3)),
-            "enable_trading": 'enable_trading' in request.form
+            "enable_trading": 'enable_trading' in request.form,
+            "enable_tp_sl": 'enable_tp_sl' in request.form,
+            "long_take_profit_percentage": float(long_tp) if long_tp else config.long_take_profit_percentage,
+            "long_stop_loss_percentage": float(long_sl) if long_sl else config.long_stop_loss_percentage,
+            "short_take_profit_percentage": float(short_tp) if short_tp else config.short_take_profit_percentage,
+            "short_stop_loss_percentage": float(short_sl) if short_sl else config.short_stop_loss_percentage
         }
         
         with open('data/config.json', 'w') as f:
@@ -386,6 +396,7 @@ def manage_users():
 @app.route('/webhook', methods=['POST'])
 def webhook():
     if not request.json:
+        logger.error("Received invalid JSON in webhook")
         return jsonify({"status": "error", "message": "Invalid JSON"}), 400
     
     logger.info(f"Received webhook data: {request.json}")
@@ -396,90 +407,79 @@ def webhook():
         return jsonify({"status": "error", "message": "Trading is disabled"}), 200
     
     try:
-        # Request.json verisinin formatını analiz et
         data = request.json
         logger.info(f"Processing webhook data: {data}")
         
-        # Pipedream formatını kontrol et
-        symbol = data.get("symbol", "")
-        action = data.get("action", "").lower()
+        # Daha esnek sinyal formatı kontrolü
+        signal = None
         
-        # Sembol kontrolü
-        if not symbol:
-            # Eski format kontrolü - BTCUSDT/long/open gibi
-            signal = None
-            
-            # 1. Webhook test aracından gelen doğrudan 'signal' alanı
+        # TradingView formatı kontrolü
+        if isinstance(data, dict):
+            # 1. Doğrudan signal alanı
             if 'signal' in data:
                 signal = data['signal']
-                logger.info(f"Found signal in 'signal' field: {signal}")
-            
-            # 2. TradingView'dan gelen 'strategy.alert_message' formatı
+            # 2. TradingView alert_message
             elif 'strategy' in data and 'alert_message' in data['strategy']:
                 signal = data['strategy']['alert_message']
-                logger.info(f"Found signal in strategy.alert_message: {signal}")
-            
-            # 3. Doğrudan 'message' veya 'text' alanlarını deneyebiliriz
+            # 3. Basit mesaj alanları
             elif 'message' in data:
                 signal = data['message']
-                logger.info(f"Found signal in 'message' field: {signal}")
             elif 'text' in data:
                 signal = data['text']
-                logger.info(f"Found signal in 'text' field: {signal}")
+            # 4. Pipedream formatı
+            elif 'symbol' in data and 'action' in data:
+                symbol = data['symbol']
+                action = data['action'].lower()
+                direction = "long" if action in ["buy", "long"] else "short"
+                trade_action = "open" if action in ["buy", "long"] else "close"
+                signal = f"{symbol}/{direction}/{trade_action}"
             
-            # 4. TradingView'dan gelen JSON verisinde text message değeri arıyor olabiliriz
-            elif any('/' in str(val) for val in data.values() if isinstance(val, str)):
-                for key, value in data.items():
-                    if isinstance(value, str) and '/' in value and len(value.split('/')) == 3:
-                        signal = value
-                        logger.info(f"Found signal in '{key}' field: {signal}")
-                        break
-            
+            # 5. Herhangi bir string değerde sinyal formatı arama
             if not signal:
-                logger.error(f"No signal found in webhook data: {data}")
-                return jsonify({"status": "error", "message": "No signal provided"}), 400
-            
-            # Eski format işleme - BTCUSDT/long/open
-            parts = signal.split('/')
-            if len(parts) != 3:
-                logger.error(f"Invalid signal format: {signal}")
-                return jsonify({"status": "error", "message": "Invalid signal format"}), 400
-            
-            symbol, direction, action = parts
-        else:
-            # Pipedream format işleme - symbol ve action alanları
-            # Long/Short ve Open/Close mantığı
-            direction = "long" if action == "buy" else "short"
-            trade_action = "open" if action == "buy" else "close"
-            
-            logger.info(f"Processed Pipedream format - Symbol: {symbol}, Direction: {direction}, Action: {trade_action}")
-            
-            # action değişkenini trade_action olarak değiştir (Pipedream uyumu)
-            action = trade_action
+                for value in data.values():
+                    if isinstance(value, str) and '/' in value:
+                        parts = value.split('/')
+                        if len(parts) == 3:
+                            signal = value
+                            break
         
-        # Semboldeki ".P" ekini temizle
-        if ".P" in symbol:
-            original_symbol = symbol
-            symbol = symbol.replace(".P", "")
-            logger.info(f"Cleaned symbol from {original_symbol} to {symbol}")
+        if not signal:
+            logger.error(f"No valid signal found in webhook data: {data}")
+            return jsonify({"status": "error", "message": "No valid signal found"}), 400
         
-        if not symbol or not direction or not action:
-            logger.error(f"Invalid signal components after processing")
-            return jsonify({"status": "error", "message": "Invalid signal components"}), 400
+        logger.info(f"Extracted signal: {signal}")
         
-        if direction.lower() not in ['long', 'short']:
+        # Sinyal formatını işleme
+        parts = signal.strip().split('/')
+        if len(parts) != 3:
+            logger.error(f"Invalid signal format: {signal}")
+            return jsonify({"status": "error", "message": "Invalid signal format"}), 400
+        
+        symbol, direction, action = [part.strip().lower() for part in parts]
+        
+        # Sembol temizleme
+        symbol = symbol.replace(".P", "").upper()
+        
+        if direction not in ['long', 'short']:
             logger.error(f"Invalid direction: {direction}")
             return jsonify({"status": "error", "message": "Invalid direction"}), 400
         
-        if action.lower() not in ['open', 'close']:
+        if action not in ['open', 'close']:
             logger.error(f"Invalid action: {action}")
             return jsonify({"status": "error", "message": "Invalid action"}), 400
         
-        # Process the signal in a separate thread to avoid blocking
-        threading.Thread(target=process_signal, args=(symbol, direction.lower(), action.lower())).start()
+        # Sinyali işle
+        if not bitget_handler:
+            logger.error("Bitget handler not initialized")
+            return jsonify({"status": "error", "message": "Trading system not initialized"}), 500
+        
+        logger.info(f"Processing signal: {symbol}/{direction}/{action}")
+        
+        # Sinyali işle
+        threading.Thread(target=process_signal, args=(symbol, direction, action)).start()
         
         return jsonify({
-            "status": "success", 
+            "status": "success",
             "message": f"Signal received and processing: {symbol}/{direction}/{action}"
         }), 200
     
@@ -487,60 +487,66 @@ def webhook():
         logger.error(f"Error processing webhook: {str(e)}")
         import traceback
         logger.error(f"Webhook error details: {traceback.format_exc()}")
-        return jsonify({"status": "error", "message": f"Error: {str(e)}"}), 500
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 def process_signal(symbol, direction, action):
+    """Process trading signals"""
+    logger.info(f"Starting to process signal: {symbol}/{direction}/{action}")
+    
     if not bitget_handler:
-        logger.error("Bitget handler not initialized. Please configure API keys.")
+        error_msg = "Bitget handler not initialized. Please configure API keys."
+        logger.error(error_msg)
+        asyncio.run(send_telegram_notification(f"❌ {error_msg}"))
         return
     
-    config = load_config()
-    
-    # Check daily trade limit
-    with open('data/positions.json', 'r') as f:
-        positions = json.load(f)
-    
-    today = datetime.now().strftime('%Y-%m-%d')
-    today_trades = sum(1 for pos in positions if pos.get('open_time', '').startswith(today))
-    
-    if action == 'open' and today_trades >= config.max_daily_trades:
-        logger.info(f"Daily trade limit reached ({config.max_daily_trades}). Ignoring signal.")
-        asyncio.run(send_telegram_notification(f"⚠️ Daily trade limit reached. Ignoring {direction} {action} signal for {symbol}."))
-        return
-    
-    # Check max open positions
-    open_positions = sum(1 for pos in positions if not pos.get('closed', False))
-    
-    if action == 'open' and open_positions >= config.max_open_positions:
-        logger.info(f"Maximum open positions limit reached ({config.max_open_positions}). Ignoring signal.")
-        asyncio.run(send_telegram_notification(f"⚠️ Max open positions limit reached. Ignoring {direction} {action} signal for {symbol}."))
-        return
-    
-    # Execute the trade
     try:
+        config = load_config()
+        
+        # Günlük işlem limiti kontrolü
+        with open('data/positions.json', 'r') as f:
+            positions = json.load(f)
+        
+        today = datetime.now().strftime('%Y-%m-%d')
+        today_trades = sum(1 for pos in positions if pos.get('open_time', '').startswith(today))
+        
+        if action == 'open' and today_trades >= config.max_daily_trades:
+            msg = f"Daily trade limit reached ({config.max_daily_trades}). Ignoring signal."
+            logger.info(msg)
+            asyncio.run(send_telegram_notification(f"⚠️ {msg}"))
+            return
+        
+        # Açık pozisyon limiti kontrolü
+        open_positions = sum(1 for pos in positions if not pos.get('closed', False))
+        
+        if action == 'open' and open_positions >= config.max_open_positions:
+            msg = f"Maximum open positions limit reached ({config.max_open_positions}). Ignoring signal."
+            logger.info(msg)
+            asyncio.run(send_telegram_notification(f"⚠️ {msg}"))
+            return
+        
+        # İşlemi gerçekleştir
         if action == 'open':
+            # Pozisyon aç
             side = f"open_{direction}"
+            logger.info(f"Placing {side} order for {symbol}")
+            
             order_result = bitget_handler.place_order(symbol, side)
+            logger.info(f"Order result: {order_result}")
             
             if order_result and order_result.get('data', {}).get('orderId'):
-                order_id = order_result['data']['orderId']
+                order_data = order_result['data']
+                order_id = order_data['orderId']
                 
-                # Sipariş sonucundan daha fazla bilgi almaya çalışalım
-                logger.info(f"Order result data: {order_result.get('data', {})}")
+                # Size ve fiyat bilgilerini al
+                size = order_data.get('size', '0')
+                price = order_data.get('price', '0')
+                avg_price = order_data.get('averagePrice', '0')
                 
-                # Size ve price bilgilerini doğru alanlarda arayalım
-                # Bitget API'sinden dönen yanıta göre uyarlama yapıyoruz
-                size = order_result['data'].get('size', '0')
-                price = order_result['data'].get('price', '0')
-                avg_price = order_result['data'].get('averagePrice', '0')
-                
-                # Eğer price değeri 0 ise market api ile güncel fiyatı alalım
+                # Fiyat 0 ise piyasa fiyatını al
                 if float(price) <= 0 or price == '0':
-                    current_price = bitget_handler.get_symbol_price(symbol)
-                    price = str(current_price)
-                    logger.info(f"Using current market price for {symbol}: {price}")
+                    price = str(bitget_handler.get_symbol_price(symbol))
                 
-                # Save position
+                # Yeni pozisyonu kaydet
                 new_position = {
                     "id": order_id,
                     "symbol": symbol,
@@ -552,24 +558,22 @@ def process_signal(symbol, direction, action):
                 }
                 
                 positions.append(new_position)
-                
                 with open('data/positions.json', 'w') as f:
                     json.dump(positions, f)
                 
-                # Send Telegram notification
+                # Telegram bildirimi gönder
                 message = (
                     f"🔔 New {direction.upper()} position opened\n"
                     f"Symbol: {symbol}\n"
                     f"Entry Price: {new_position['entry_price']}\n"
-                    f"Size: {new_position['size']}\n"
+                    f"Size: {size}\n"
                     f"Order ID: {order_id}"
                 )
                 asyncio.run(send_telegram_notification(message))
-                
                 logger.info(f"Successfully opened {direction} position for {symbol}")
-        
+            
         elif action == 'close':
-            # Find matching open positions
+            # Eşleşen açık pozisyonları bul
             matching_positions = [
                 pos for pos in positions 
                 if pos['symbol'] == symbol and 
@@ -578,54 +582,71 @@ def process_signal(symbol, direction, action):
             ]
             
             if not matching_positions:
-                logger.info(f"No matching open {direction} positions found for {symbol}")
-                asyncio.run(send_telegram_notification(f"⚠️ No matching open {direction} positions found for {symbol} to close."))
+                msg = f"No matching open {direction} positions found for {symbol}"
+                logger.info(msg)
+                asyncio.run(send_telegram_notification(f"⚠️ {msg}"))
                 return
             
+            # Her eşleşen pozisyonu kapat
             for position in matching_positions:
                 side = f"close_{direction}"
+                logger.info(f"Closing position {position['id']} with {side} order for {symbol}")
+                
                 order_result = bitget_handler.place_order(symbol, side)
+                logger.info(f"Close order result: {order_result}")
                 
                 if order_result and order_result.get('data', {}).get('orderId'):
-                    # Sipariş sonucundan daha fazla bilgi almaya çalışalım
-                    logger.info(f"Close order result data: {order_result.get('data', {})}")
+                    order_data = order_result['data']
                     
-                    # Size ve price bilgilerini doğru alanlarda arayalım
-                    exit_price = order_result['data'].get('price', '0')
-                    avg_price = order_result['data'].get('averagePrice', '0')
+                    # Çıkış fiyatını al
+                    exit_price = order_data.get('price', '0')
+                    avg_price = order_data.get('averagePrice', '0')
                     
-                    # Eğer price değeri 0 ise market api ile güncel fiyatı alalım
                     if float(exit_price) <= 0 or exit_price == '0':
-                        current_price = bitget_handler.get_symbol_price(symbol)
-                        exit_price = str(current_price)
-                        logger.info(f"Using current market price for close {symbol}: {exit_price}")
+                        exit_price = str(bitget_handler.get_symbol_price(symbol))
                     
-                    # Update position
+                    # Pozisyonu güncelle
                     position['closed'] = True
                     position['close_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     position['exit_price'] = exit_price if float(exit_price) > 0 else avg_price
                     
-                    # Save updated positions
+                    # Güncellenmiş pozisyonları kaydet
                     with open('data/positions.json', 'w') as f:
                         json.dump(positions, f)
                     
-                    # Send Telegram notification
+                    # Telegram bildirimi gönder
                     message = (
                         f"🔔 {direction.upper()} position closed\n"
                         f"Symbol: {symbol}\n"
                         f"Entry Price: {position['entry_price']}\n"
                         f"Exit Price: {position['exit_price']}\n"
                         f"Size: {position['size']}\n"
-                        f"Order ID: {order_result['data']['orderId']}"
+                        f"Order ID: {order_data['orderId']}"
                     )
                     asyncio.run(send_telegram_notification(message))
-                    
                     logger.info(f"Successfully closed {direction} position for {symbol}")
     
     except Exception as e:
-        error_message = f"Error executing trade: {str(e)}"
-        logger.error(error_message)
-        asyncio.run(send_telegram_notification(f"❌ {error_message}"))
+        error_msg = f"Error executing trade: {str(e)}"
+        logger.error(error_msg)
+        import traceback
+        logger.error(f"Trade error details: {traceback.format_exc()}")
+        asyncio.run(send_telegram_notification(f"❌ {error_msg}"))
+
+def start_position_monitor(bitget_handler):
+    """Start position monitoring in a separate thread"""
+    monitor_thread = Thread(target=bitget_handler.monitor_positions, daemon=True)
+    monitor_thread.start()
+
+# Initialize BitgetHandler with config values
+config = load_config()
+bitget_handler = BitgetHandler(
+    config.bitget_api_key,
+    config.bitget_secret_key,
+    config.bitget_passphrase,
+    config
+)
+start_position_monitor(bitget_handler)
 
 # Add current year to all templates
 @app.context_processor
