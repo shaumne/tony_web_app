@@ -16,13 +16,14 @@ class Config:
         self.leverage = kwargs.get('leverage', 5)
         self.order_size_percentage = kwargs.get('order_size_percentage', 10)
         self.max_daily_trades = kwargs.get('max_daily_trades', 10)
-        self.max_open_positions = kwargs.get('max_open_positions', 3)
+        self.max_open_positions = kwargs.get('max_open_positions', 10)
         self.enable_trading = kwargs.get('enable_trading', True)
         self.enable_tp_sl = kwargs.get('enable_tp_sl', False)
         self.long_take_profit_percentage = kwargs.get('long_take_profit_percentage', 2.5)
         self.long_stop_loss_percentage = kwargs.get('long_stop_loss_percentage', 1.5)
         self.short_take_profit_percentage = kwargs.get('short_take_profit_percentage', 2.5)
         self.short_stop_loss_percentage = kwargs.get('short_stop_loss_percentage', 1.5)
+        self.enable_webhook_close_signals = kwargs.get('enable_webhook_close_signals', False)
 
 class Position:
     def __init__(self, **kwargs):

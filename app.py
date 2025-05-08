@@ -318,9 +318,10 @@ def settings():
             "leverage": int(request.form.get('leverage', 5)),
             "order_size_percentage": float(request.form.get('order_size_percentage', 10)),
             "max_daily_trades": int(request.form.get('max_daily_trades', 10)),
-            "max_open_positions": int(request.form.get('max_open_positions', 3)),
+            "max_open_positions": int(request.form.get('max_open_positions', 10)),
             "enable_trading": 'enable_trading' in request.form,
             "enable_tp_sl": 'enable_tp_sl' in request.form,
+            "enable_webhook_close_signals": 'enable_webhook_close_signals' in request.form,
             "long_take_profit_percentage": float(long_tp) if long_tp else config.long_take_profit_percentage,
             "long_stop_loss_percentage": float(long_sl) if long_sl else config.long_stop_loss_percentage,
             "short_take_profit_percentage": float(short_tp) if short_tp else config.short_take_profit_percentage,
@@ -515,14 +516,16 @@ def process_signal(symbol, direction, action):
             asyncio.run(send_telegram_notification(f"⚠️ {msg}"))
             return
         
-        # Açık pozisyon limiti kontrolü
-        open_positions = sum(1 for pos in positions if not pos.get('closed', False))
-        
-        if action == 'open' and open_positions >= config.max_open_positions:
-            msg = f"Maximum open positions limit reached ({config.max_open_positions}). Ignoring signal."
-            logger.info(msg)
-            asyncio.run(send_telegram_notification(f"⚠️ {msg}"))
-            return
+        # Açık pozisyon limiti kontrolü - API'den gerçek zamanlı veri alarak
+        if action == 'open':
+            current_positions = bitget_handler.get_open_positions()
+            open_positions_count = len([p for p in current_positions if float(p.get('total', '0')) > 0])
+            
+            if open_positions_count >= config.max_open_positions:
+                msg = f"Maximum open positions limit reached ({config.max_open_positions}). Ignoring signal."
+                logger.info(msg)
+                asyncio.run(send_telegram_notification(f"⚠️ {msg}"))
+                return
         
         # İşlemi gerçekleştir
         if action == 'open':
