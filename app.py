@@ -677,17 +677,17 @@ def process_signal(symbol, direction, action):
                         json.dump(positions, f)
                     
                     # Kapatma nedeni
-                    reason = "TradingView sinyali ile otomatik kapatma"
+                    reason = "Automatic close via TradingView signal"
                     
                     # Telegram bildirimi gönder
                     message = (
-                        f"🔔 {direction.upper()} pozisyon kapatıldı\n"
-                        f"Sembol: {symbol}\n"
-                        f"Giriş Fiyatı: {position['entry_price']}\n"
-                        f"Çıkış Fiyatı: {position['exit_price']}\n"
-                        f"Boyut: {position['size']}\n"
-                        f"Sipariş ID: {order_data['orderId']}\n"
-                        f"Neden: {reason}"
+                        f"🔔 {direction.upper()} position closed\n"
+                        f"Symbol: {symbol}\n"
+                        f"Entry Price: {position['entry_price']}\n"
+                        f"Exit Price: {position['exit_price']}\n"
+                        f"Size: {position['size']}\n"
+                        f"Order ID: {order_data['orderId']}\n"
+                        f"Reason: {reason}"
                     )
                     asyncio.run(send_telegram_notification(message))
                     logger.info(f"Successfully closed {direction} position for {symbol}")

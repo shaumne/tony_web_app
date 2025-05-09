@@ -492,6 +492,17 @@ class BitgetHandler:
 
     def monitor_positions(self):
         """Continuously monitor open positions and update dashboard"""
+        # İlk çalıştırmada pozisyonları yükle
+        try:
+            initial_positions = self.get_open_positions()
+            for pos in initial_positions:
+                pos_id = pos.get('positionId')
+                if pos_id:
+                    self.last_position_states[pos_id] = pos
+            logger.info(f"Initialized position monitor with {len(initial_positions)} positions")
+        except Exception as e:
+            logger.error(f"Error initializing position monitor: {str(e)}")
+        
         while True:
             try:
                 # Önceki pozisyonları sakla
@@ -504,15 +515,18 @@ class BitgetHandler:
                 
                 # Güncel pozisyon ID'lerini topla
                 current_position_ids = set()
+                current_symbols = set()
                 for pos in current_positions:
                     pos_id = pos.get('positionId')
+                    symbol = pos.get('symbol', '')
                     if pos_id:
                         current_position_ids.add(pos_id)
+                        current_symbols.add(symbol)
                         self.last_position_states[pos_id] = pos
                 
                 # Kapanan pozisyonları kontrol et (önceki pozisyonlarda var ama güncel pozisyonlarda yok)
                 for pos_id, pos in previous_positions.items():
-                    if pos_id not in current_position_ids and pos_id in self.last_position_states:
+                    if pos_id not in current_position_ids:
                         # Pozisyon kapanmış, bildirim gönder
                         symbol = pos.get('symbol', '').replace('_UMCBL', '')
                         side = pos.get('holdSide', '').lower()
@@ -528,20 +542,29 @@ class BitgetHandler:
                         else:
                             reason = "Position Closed"
                         
+                        # Güncel fiyatı al
+                        try:
+                            current_price = self.get_symbol_price(symbol)
+                        except:
+                            current_price = 0
+                        
                         # Pozisyon kapanma bildirimini gönder
                         message = (
                             f"📊 Position Closed\n"
                             f"Symbol: {symbol}\n"
                             f"Direction: {side.upper()}\n"
                             f"Entry Price: ${entry_price:.2f}\n"
+                            f"Close Price: ${current_price:.2f}\n"
                             f"Size: {size:.4f}\n"
                             f"Reason: {reason}\n"
                             f"Position ID: {pos_id}"
                         )
+                        logger.info(f"Position closed: {symbol} {side} {size}")
                         asyncio.run(self.send_telegram_notification(message))
                         
                         # Kapanan pozisyonu son durumlardan kaldır
-                        del self.last_position_states[pos_id]
+                        if pos_id in self.last_position_states:
+                            del self.last_position_states[pos_id]
                 
                 # Check for TP/SL triggers by comparing with last known states
                 for pos in current_positions:
