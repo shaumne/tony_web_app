@@ -272,12 +272,20 @@ def close_position():
                 # Try to get more information from order result
                 logger.info(f"Close order result data: {order_result.get('data', {})}")
                 
+                # Pozisyon kapatma nedeni
+                reason = "Manual close (via Dashboard)"
+                
+                # Fiyat bilgisini al
+                current_price = bitget_handler.get_symbol_price(symbol)
+                
                 # Send Telegram notification
                 message = (
-                    f"🔔 {direction.upper()} position manually closed from dashboard\n"
+                    f"🔔 {direction.upper()} position closed\n"
                     f"Symbol: {symbol}\n"
                     f"Size: {size}\n"
-                    f"Order ID: {order_result['data']['orderId']}"
+                    f"Close Price: ${current_price:.2f}\n"
+                    f"Order ID: {order_result['data']['orderId']}\n"
+                    f"Reason: {reason}"
                 )
                 asyncio.run(send_telegram_notification(message))
                 
@@ -554,6 +562,19 @@ def process_signal(symbol, direction, action):
                 logger.info(msg)
                 asyncio.run(send_telegram_notification(f"⚠️ {msg}"))
                 return
+            
+            # Aynı sembol ve yönde açık pozisyon kontrolü
+            for pos in current_positions:
+                pos_symbol = pos.get('symbol', '').replace('_UMCBL', '')
+                pos_side = pos.get('holdSide', '').lower()
+                pos_size = float(pos.get('total', '0'))
+                
+                # Pozisyon boyutu sıfırdan büyükse ve sembol/yön eşleşiyorsa
+                if pos_size > 0 and pos_symbol == symbol and pos_side == direction:
+                    msg = f"Already have an open {direction.upper()} position for {symbol}. Ignoring signal."
+                    logger.info(msg)
+                    asyncio.run(send_telegram_notification(f"⚠️ {msg}"))
+                    return
         
         # İşlemi gerçekleştir
         if action == 'open':
@@ -655,14 +676,18 @@ def process_signal(symbol, direction, action):
                     with open('data/positions.json', 'w') as f:
                         json.dump(positions, f)
                     
+                    # Kapatma nedeni
+                    reason = "TradingView sinyali ile otomatik kapatma"
+                    
                     # Telegram bildirimi gönder
                     message = (
-                        f"🔔 {direction.upper()} position closed\n"
-                        f"Symbol: {symbol}\n"
-                        f"Entry Price: {position['entry_price']}\n"
-                        f"Exit Price: {position['exit_price']}\n"
-                        f"Size: {position['size']}\n"
-                        f"Order ID: {order_data['orderId']}"
+                        f"🔔 {direction.upper()} pozisyon kapatıldı\n"
+                        f"Sembol: {symbol}\n"
+                        f"Giriş Fiyatı: {position['entry_price']}\n"
+                        f"Çıkış Fiyatı: {position['exit_price']}\n"
+                        f"Boyut: {position['size']}\n"
+                        f"Sipariş ID: {order_data['orderId']}\n"
+                        f"Neden: {reason}"
                     )
                     asyncio.run(send_telegram_notification(message))
                     logger.info(f"Successfully closed {direction} position for {symbol}")

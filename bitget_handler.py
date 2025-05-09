@@ -153,8 +153,8 @@ class BitgetHandler:
                     return 45000.0
             except Exception as e:
                 logger.error(f"Failed to get ticker: {str(e)}")
-                logger.warning(f"Using fixed price for {formatted_symbol}: 45000")
-                return 45000.0
+                logger.warning(f"Using fixed price for {symbol}: 45000")
+                return 45000.0  # Test için sabit bir değer
         except Exception as e:
             logger.error(f"Failed to get symbol price: {str(e)}")
             logger.warning(f"Using fixed price for {symbol}: 45000")
@@ -183,9 +183,13 @@ class BitgetHandler:
                 size = close_size
                 logger.info(f"Using provided size for closing position: {size}")
             else:
-                # Calculate order size based on percentage for new positions
+                # Her işlem öncesi bakiyeyi yeniden al - önbelleklenmiş değer kullanma
+                # Önce mevcut pozisyonları temizle
+                self.last_position_states = {}
+                
+                # Bakiyeyi yeniden al
                 balance, _, _ = self.get_account_balance('USDT')
-                logger.info(f"Account balance: {balance} USDT")
+                logger.info(f"Fresh account balance: {balance} USDT")
                 
                 if isinstance(balance, (int, float)) and balance <= 0:
                     logger.warning("Using dummy balance for testing: 1000 USDT")
@@ -214,22 +218,24 @@ class BitgetHandler:
                     logger.warning("Using dummy price for BTC: 45000")
                     current_price = 45000.0
                     
-                # Calculate size in BTC (or other coin)
-                # Using exact order amount (not multiplied by leverage)
-                size = order_amount / current_price
-                # Hesaplanan boyutu olduğu gibi kullan, yuvarlama yapma
-                # size = max(0.001, round(size, 3))
-                logger.info(f"Final size for {symbol}: {size} (${order_amount} USDT)")
+                # Set leverage
+                leverage = self.config.get('leverage', 5)
+                if not isinstance(leverage, (int, float)):
+                    try:
+                        leverage = int(float(leverage))
+                    except (TypeError, ValueError):
+                        logger.warning(f"Invalid leverage value: {leverage}, using default 5x")
+                        leverage = 5
+                
+                # Apply leverage to order amount
+                leveraged_amount = order_amount * leverage
+                logger.info(f"Leveraged amount (with {leverage}x): ${leveraged_amount} USDT")
+                
+                # Calculate size in BTC (or other coin) with leveraged amount
+                size = leveraged_amount / current_price
+                logger.info(f"Final size for {symbol}: {size} (${leveraged_amount} USDT with {leverage}x leverage)")
             
             # Set leverage
-            leverage = self.config.get('leverage', 5)
-            if not isinstance(leverage, (int, float)):
-                try:
-                    leverage = int(float(leverage))
-                except (TypeError, ValueError):
-                    logger.warning(f"Invalid leverage value: {leverage}, using default 5x")
-                    leverage = 5
-            
             try:
                 for hold_side in ['long', 'short']:
                     leverage_params = {
@@ -317,11 +323,13 @@ class BitgetHandler:
                     # Response'dan size bilgisini al, yoksa params'dan kullan
                     order_size = params.get('size', '0')
                     
+                    # Tek bir bildirim mesajı oluştur - hem emir hem pozisyon bilgilerini içeren
                     message = (
-                        f"🔔 {side.upper()} order placed\n"
-                        f"Symbol: {formatted_symbol}\n"
-                        f"Size: {order_size}\n"
+                        f"🔔 New {side.replace('open_', '').upper()} position opened\n"
+                        f"Symbol: {formatted_symbol.replace('_UMCBL', '')}\n"
                         f"Entry Price: ${current_price:.2f}\n"
+                        f"Size: {order_size}\n"
+                        f"Order ID: {response['data']['orderId']}\n"
                     )
                     
                     # TP/SL bilgilerini ekle
@@ -345,18 +353,8 @@ class BitgetHandler:
                                 f"Stop Loss: ${sl_price:.1f} (+{sl_percentage}%)"
                             )
 
-                    # İkinci bildirim - Pozisyon detayları
-                    position_message = (
-                        f"🔔 New {side.replace('open_', '').upper()} position opened\n"
-                        f"Symbol: {formatted_symbol.replace('_UMCBL', '')}\n"
-                        f"Entry Price: {current_price:.1f}\n"
-                        f"Size: {order_size}\n"
-                        f"Order ID: {response['data']['orderId']}\n"
-                    )
-
-                    # Her iki bildirimi de gönder
+                    # Tek bildirim gönder
                     asyncio.run(self.send_telegram_notification(message))
-                    asyncio.run(self.send_telegram_notification(position_message))
 
                 return response
             except BitgetAPIException as be:
@@ -496,71 +494,155 @@ class BitgetHandler:
         """Continuously monitor open positions and update dashboard"""
         while True:
             try:
-                positions = self.get_open_positions()
+                # Önceki pozisyonları sakla
+                previous_positions = {}
+                for pos_id, pos in self.last_position_states.items():
+                    previous_positions[pos_id] = pos
+                
+                # Güncel pozisyonları al
+                current_positions = self.get_open_positions()
+                
+                # Güncel pozisyon ID'lerini topla
+                current_position_ids = set()
+                for pos in current_positions:
+                    pos_id = pos.get('positionId')
+                    if pos_id:
+                        current_position_ids.add(pos_id)
+                        self.last_position_states[pos_id] = pos
+                
+                # Kapanan pozisyonları kontrol et (önceki pozisyonlarda var ama güncel pozisyonlarda yok)
+                for pos_id, pos in previous_positions.items():
+                    if pos_id not in current_position_ids and pos_id in self.last_position_states:
+                        # Pozisyon kapanmış, bildirim gönder
+                        symbol = pos.get('symbol', '').replace('_UMCBL', '')
+                        side = pos.get('holdSide', '').lower()
+                        entry_price = float(pos.get('averageOpenPrice', '0'))
+                        size = float(pos.get('total', '0'))
+                        
+                        # Pozisyon kapanma nedenini tahmin et
+                        reason = "Unknown"
+                        if float(pos.get('unrealizedPL', '0')) > 0:
+                            reason = "Manual Close or Take Profit"
+                        elif float(pos.get('unrealizedPL', '0')) < 0:
+                            reason = "Manual Close or Stop Loss"
+                        else:
+                            reason = "Position Closed"
+                        
+                        # Pozisyon kapanma bildirimini gönder
+                        message = (
+                            f"📊 Position Closed\n"
+                            f"Symbol: {symbol}\n"
+                            f"Direction: {side.upper()}\n"
+                            f"Entry Price: ${entry_price:.2f}\n"
+                            f"Size: {size:.4f}\n"
+                            f"Reason: {reason}\n"
+                            f"Position ID: {pos_id}"
+                        )
+                        asyncio.run(self.send_telegram_notification(message))
+                        
+                        # Kapanan pozisyonu son durumlardan kaldır
+                        del self.last_position_states[pos_id]
                 
                 # Check for TP/SL triggers by comparing with last known states
-                for pos in positions:
+                for pos in current_positions:
                     pos_id = pos.get('positionId')
                     symbol = pos.get('symbol', '').replace('_UMCBL', '')
                     current_price = float(pos.get('marketPrice', '0'))
                     side = pos.get('holdSide', '').lower()
                     
                     # Get last known state
-                    last_state = self.last_position_states.get(pos_id, {})
+                    last_state = previous_positions.get(pos_id, {})
                     last_price = float(last_state.get('marketPrice', '0'))
                     
                     if last_price > 0 and current_price > 0:
                         # Check if TP was hit
                         if side == 'long' and current_price >= float(pos.get('presetTakeProfitPrice', '0')) > 0:
+                            entry_price = float(pos.get('averageOpenPrice', '0'))
+                            tp_price = float(pos.get('presetTakeProfitPrice', '0'))
+                            unrealized_pnl = float(pos.get('unrealizedPL', '0'))
+                            size = float(pos.get('total', '0'))
+                            
+                            # Kar yüzdesini hesapla
+                            profit_percentage = ((tp_price - entry_price) / entry_price) * 100
+                            
                             message = (
                                 f"🎯 Take Profit Triggered!\n"
                                 f"Symbol: {symbol}\n"
-                                f"Side: {side.upper()}\n"
-                                f"Entry Price: ${float(pos.get('averageOpenPrice', '0')):.2f}\n"
-                                f"TP Price: ${current_price:.2f}\n"
-                                f"PnL: ${float(pos.get('unrealizedPL', '0')):.2f}"
+                                f"Direction: {side.upper()}\n"
+                                f"Entry Price: ${entry_price:.2f}\n"
+                                f"TP Price: ${tp_price:.2f}\n"
+                                f"Profit: ${unrealized_pnl:.2f} (+{profit_percentage:.2f}%)\n"
+                                f"Size: {size:.4f}\n"
+                                f"Reason: Automatic Take Profit"
                             )
                             asyncio.run(self.send_telegram_notification(message))
                             
                         elif side == 'short' and current_price <= float(pos.get('presetTakeProfitPrice', '0')) > 0:
+                            entry_price = float(pos.get('averageOpenPrice', '0'))
+                            tp_price = float(pos.get('presetTakeProfitPrice', '0'))
+                            unrealized_pnl = float(pos.get('unrealizedPL', '0'))
+                            size = float(pos.get('total', '0'))
+                            
+                            # Kar yüzdesini hesapla
+                            profit_percentage = ((entry_price - tp_price) / entry_price) * 100
+                            
                             message = (
                                 f"🎯 Take Profit Triggered!\n"
                                 f"Symbol: {symbol}\n"
-                                f"Side: {side.upper()}\n"
-                                f"Entry Price: ${float(pos.get('averageOpenPrice', '0')):.2f}\n"
-                                f"TP Price: ${current_price:.2f}\n"
-                                f"PnL: ${float(pos.get('unrealizedPL', '0')):.2f}"
+                                f"Direction: {side.upper()}\n"
+                                f"Entry Price: ${entry_price:.2f}\n"
+                                f"TP Price: ${tp_price:.2f}\n"
+                                f"Profit: ${unrealized_pnl:.2f} (+{profit_percentage:.2f}%)\n"
+                                f"Size: {size:.4f}\n"
+                                f"Reason: Automatic Take Profit"
                             )
                             asyncio.run(self.send_telegram_notification(message))
                             
                         # Check if SL was hit
                         if side == 'long' and current_price <= float(pos.get('presetStopLossPrice', '0')) > 0:
+                            entry_price = float(pos.get('averageOpenPrice', '0'))
+                            sl_price = float(pos.get('presetStopLossPrice', '0'))
+                            unrealized_pnl = float(pos.get('unrealizedPL', '0'))
+                            size = float(pos.get('total', '0'))
+                            
+                            # Zarar yüzdesini hesapla
+                            loss_percentage = ((entry_price - sl_price) / entry_price) * 100
+                            
                             message = (
                                 f"🛑 Stop Loss Triggered!\n"
                                 f"Symbol: {symbol}\n"
-                                f"Side: {side.upper()}\n"
-                                f"Entry Price: ${float(pos.get('averageOpenPrice', '0')):.2f}\n"
-                                f"SL Price: ${current_price:.2f}\n"
-                                f"PnL: ${float(pos.get('unrealizedPL', '0')):.2f}"
+                                f"Direction: {side.upper()}\n"
+                                f"Entry Price: ${entry_price:.2f}\n"
+                                f"SL Price: ${sl_price:.2f}\n"
+                                f"Loss: ${unrealized_pnl:.2f} (-{loss_percentage:.2f}%)\n"
+                                f"Size: {size:.4f}\n"
+                                f"Reason: Automatic Stop Loss"
                             )
                             asyncio.run(self.send_telegram_notification(message))
                             
                         elif side == 'short' and current_price >= float(pos.get('presetStopLossPrice', '0')) > 0:
+                            entry_price = float(pos.get('averageOpenPrice', '0'))
+                            sl_price = float(pos.get('presetStopLossPrice', '0'))
+                            unrealized_pnl = float(pos.get('unrealizedPL', '0'))
+                            size = float(pos.get('total', '0'))
+                            
+                            # Zarar yüzdesini hesapla
+                            loss_percentage = ((sl_price - entry_price) / entry_price) * 100
+                            
                             message = (
                                 f"🛑 Stop Loss Triggered!\n"
                                 f"Symbol: {symbol}\n"
-                                f"Side: {side.upper()}\n"
-                                f"Entry Price: ${float(pos.get('averageOpenPrice', '0')):.2f}\n"
-                                f"SL Price: ${current_price:.2f}\n"
-                                f"PnL: ${float(pos.get('unrealizedPL', '0')):.2f}"
+                                f"Direction: {side.upper()}\n"
+                                f"Entry Price: ${entry_price:.2f}\n"
+                                f"SL Price: ${sl_price:.2f}\n"
+                                f"Loss: ${unrealized_pnl:.2f} (-{loss_percentage:.2f}%)\n"
+                                f"Size: {size:.4f}\n"
+                                f"Reason: Automatic Stop Loss"
                             )
                             asyncio.run(self.send_telegram_notification(message))
                     
-                    # Update last known state
-                    self.last_position_states[pos_id] = pos
-                
                 # Update positions in database or state management
-                self.update_dashboard_positions(positions)
+                self.update_dashboard_positions(current_positions)
                 time.sleep(5)  # Check every 5 seconds
                 
             except Exception as e:
