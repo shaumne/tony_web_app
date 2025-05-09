@@ -419,29 +419,36 @@ def webhook():
             # 1. Doğrudan signal alanı
             if 'signal' in data:
                 signal = data['signal']
+                logger.info(f"Found direct signal field: {signal}")
             # 2. TradingView alert_message
             elif 'strategy' in data and 'alert_message' in data['strategy']:
                 signal = data['strategy']['alert_message']
+                logger.info(f"Found TradingView alert_message: {signal}")
             # 3. Basit mesaj alanları
             elif 'message' in data:
                 signal = data['message']
+                logger.info(f"Found message field: {signal}")
             elif 'text' in data:
                 signal = data['text']
+                logger.info(f"Found text field: {signal}")
             # 4. Pipedream formatı
             elif 'symbol' in data and 'action' in data:
                 symbol = data['symbol']
                 action = data['action'].lower()
                 direction = "long" if action in ["buy", "long"] else "short"
-                trade_action = "open" if action in ["buy", "long"] else "close"
+                trade_action = "open" if action in ["buy", "sell"] else "close"
                 signal = f"{symbol}/{direction}/{trade_action}"
+                logger.info(f"Constructed signal from fields: {signal}")
             
             # 5. Herhangi bir string değerde sinyal formatı arama
             if not signal:
-                for value in data.values():
+                logger.info("Searching for signal format in any string value")
+                for key, value in data.items():
                     if isinstance(value, str) and '/' in value:
                         parts = value.split('/')
                         if len(parts) == 3:
                             signal = value
+                            logger.info(f"Found signal in field {key}: {signal}")
                             break
         
         if not signal:
@@ -460,6 +467,17 @@ def webhook():
         
         # Sembol temizleme
         symbol = symbol.replace(".P", "").upper()
+        logger.info(f"Cleaned symbol: {symbol}")
+        
+        # Sembol formatını kontrol et
+        if not symbol.endswith("USDT"):
+            logger.warning(f"Symbol {symbol} does not end with USDT, this might cause issues")
+            # Bazı borsalar için otomatik USDT ekleyebiliriz
+            if symbol.endswith("USD"):
+                logger.info(f"Symbol ends with USD, not adding USDT suffix")
+            else:
+                logger.info(f"Adding USDT suffix to symbol: {symbol}USDT")
+                symbol = f"{symbol}USDT"
         
         if direction not in ['long', 'short']:
             logger.error(f"Invalid direction: {direction}")
@@ -476,13 +494,20 @@ def webhook():
         
         logger.info(f"Processing signal: {symbol}/{direction}/{action}")
         
-        # Sinyali işle
-        threading.Thread(target=process_signal, args=(symbol, direction, action)).start()
-        
-        return jsonify({
-            "status": "success",
-            "message": f"Signal received and processing: {symbol}/{direction}/{action}"
-        }), 200
+        # Sinyali işle - doğrudan işlem yapalım, thread kullanmayalım
+        try:
+            # Doğrudan process_signal fonksiyonunu çağır
+            process_signal(symbol, direction, action)
+            
+            return jsonify({
+                "status": "success",
+                "message": f"Signal received and processing: {symbol}/{direction}/{action}"
+            }), 200
+        except Exception as e:
+            logger.error(f"Error processing signal: {str(e)}")
+            import traceback
+            logger.error(f"Signal processing error details: {traceback.format_exc()}")
+            return jsonify({"status": "error", "message": f"Error processing signal: {str(e)}"}), 500
     
     except Exception as e:
         logger.error(f"Error processing webhook: {str(e)}")
@@ -518,8 +543,11 @@ def process_signal(symbol, direction, action):
         
         # Açık pozisyon limiti kontrolü - API'den gerçek zamanlı veri alarak
         if action == 'open':
+            logger.info("Checking open positions count...")
             current_positions = bitget_handler.get_open_positions()
+            logger.info(f"Current positions from API: {current_positions}")
             open_positions_count = len([p for p in current_positions if float(p.get('total', '0')) > 0])
+            logger.info(f"Open positions count: {open_positions_count}, Max allowed: {config.max_open_positions}")
             
             if open_positions_count >= config.max_open_positions:
                 msg = f"Maximum open positions limit reached ({config.max_open_positions}). Ignoring signal."
@@ -533,7 +561,13 @@ def process_signal(symbol, direction, action):
             side = f"open_{direction}"
             logger.info(f"Placing {side} order for {symbol}")
             
-            order_result = bitget_handler.place_order(symbol, side)
+            # Sembol formatını kontrol et ve düzelt
+            formatted_symbol = symbol
+            if not symbol.endswith('USDT'):
+                logger.warning(f"Symbol {symbol} doesn't end with USDT, this might cause issues")
+            
+            logger.info(f"Calling place_order with symbol={formatted_symbol}, side={side}")
+            order_result = bitget_handler.place_order(formatted_symbol, side)
             logger.info(f"Order result: {order_result}")
             
             if order_result and order_result.get('data', {}).get('orderId'):
@@ -547,12 +581,12 @@ def process_signal(symbol, direction, action):
                 
                 # Fiyat 0 ise piyasa fiyatını al
                 if float(price) <= 0 or price == '0':
-                    price = str(bitget_handler.get_symbol_price(symbol))
+                    price = str(bitget_handler.get_symbol_price(formatted_symbol))
                 
                 # Yeni pozisyonu kaydet
                 new_position = {
                     "id": order_id,
-                    "symbol": symbol,
+                    "symbol": formatted_symbol,
                     "direction": direction,
                     "size": size,
                     "entry_price": price if float(price) > 0 else avg_price,
@@ -567,13 +601,17 @@ def process_signal(symbol, direction, action):
                 # Telegram bildirimi gönder
                 message = (
                     f"🔔 New {direction.upper()} position opened\n"
-                    f"Symbol: {symbol}\n"
+                    f"Symbol: {formatted_symbol}\n"
                     f"Entry Price: {new_position['entry_price']}\n"
                     f"Size: {size}\n"
                     f"Order ID: {order_id}"
                 )
                 asyncio.run(send_telegram_notification(message))
-                logger.info(f"Successfully opened {direction} position for {symbol}")
+                logger.info(f"Successfully opened {direction} position for {formatted_symbol}")
+            else:
+                error_msg = f"Failed to place order. API response: {order_result}"
+                logger.error(error_msg)
+                asyncio.run(send_telegram_notification(f"❌ {error_msg}"))
             
         elif action == 'close':
             # Eşleşen açık pozisyonları bul

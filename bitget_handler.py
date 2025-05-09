@@ -115,10 +115,14 @@ class BitgetHandler:
         try:
             # Format symbol to Bitget format if needed
             if not symbol.endswith('_UMCBL'):
-                symbol = f"{symbol}_UMCBL"
+                formatted_symbol = f"{symbol}_UMCBL"
+            else:
+                formatted_symbol = symbol
+            
+            logger.info(f"Getting price for formatted symbol: {formatted_symbol}")
             
             # Doğru parametre formatı: dict olmalı, string değil
-            params = {"symbol": symbol}
+            params = {"symbol": formatted_symbol}
             
             try:
                 # Ticker metodunu kullanalım
@@ -126,14 +130,30 @@ class BitgetHandler:
                 logger.debug(f"Ticker response: {response}")
                 
                 if response and 'data' in response:
-                    return float(response['data'].get('last', 0))
+                    price = float(response['data'].get('last', 0))
+                    logger.info(f"Current price for {formatted_symbol}: {price}")
+                    return price
                 else:
-                    # Fiyat alınamadıysa, sabit bir değer kullanalım (test için)
-                    logger.warning(f"Using fixed price for {symbol}: 45000")
+                    # Fiyat alınamadıysa, alternatif bir endpoint deneyelim
+                    try:
+                        logger.info(f"Trying alternative endpoint for price")
+                        alt_params = {"symbol": formatted_symbol}
+                        alt_response = self.base_api.get("/api/mix/v1/market/ticker", alt_params)
+                        logger.debug(f"Alternative ticker response: {alt_response}")
+                        
+                        if alt_response and 'data' in alt_response:
+                            price = float(alt_response['data'].get('last', 0))
+                            logger.info(f"Alternative price for {formatted_symbol}: {price}")
+                            return price
+                    except Exception as alt_e:
+                        logger.error(f"Alternative price endpoint failed: {str(alt_e)}")
+                    
+                    # Yine başarısız olursa sabit değer kullan
+                    logger.warning(f"Using fixed price for {formatted_symbol}: 45000")
                     return 45000.0
             except Exception as e:
                 logger.error(f"Failed to get ticker: {str(e)}")
-                logger.warning(f"Using fixed price for {symbol}: 45000")
+                logger.warning(f"Using fixed price for {formatted_symbol}: 45000")
                 return 45000.0
         except Exception as e:
             logger.error(f"Failed to get symbol price: {str(e)}")
@@ -156,6 +176,8 @@ class BitgetHandler:
             else:
                 formatted_symbol = symbol
             
+            logger.info(f"Placing order with formatted symbol: {formatted_symbol}")
+            
             # If this is a close order and we have a specific size, use it
             if side.startswith("close_") and close_size:
                 size = close_size
@@ -163,6 +185,8 @@ class BitgetHandler:
             else:
                 # Calculate order size based on percentage for new positions
                 balance, _, _ = self.get_account_balance('USDT')
+                logger.info(f"Account balance: {balance} USDT")
+                
                 if isinstance(balance, (int, float)) and balance <= 0:
                     logger.warning("Using dummy balance for testing: 1000 USDT")
                     balance = 1000.0
@@ -184,6 +208,8 @@ class BitgetHandler:
                 
                 # Get current price
                 current_price = self.get_symbol_price(symbol)
+                logger.info(f"Current price for {symbol}: {current_price}")
+                
                 if current_price <= 0:
                     logger.warning("Using dummy price for BTC: 45000")
                     current_price = 45000.0
@@ -191,8 +217,8 @@ class BitgetHandler:
                 # Calculate size in BTC (or other coin)
                 # Using exact order amount (not multiplied by leverage)
                 size = order_amount / current_price
-                # Round size to 3 decimal places and ensure minimum size of 0.001
-                size = max(0.001, round(size, 3))
+                # Hesaplanan boyutu olduğu gibi kullan, yuvarlama yapma
+                # size = max(0.001, round(size, 3))
                 logger.info(f"Final size for {symbol}: {size} (${order_amount} USDT)")
             
             # Set leverage
@@ -215,6 +241,7 @@ class BitgetHandler:
                     leverage_response = self.base_api.post("/api/mix/v1/account/setLeverage", leverage_params)
                     logger.info(f"Leverage {leverage}x set for {hold_side} side: {leverage_response}")
             except Exception as le:
+                logger.warning(f"Error setting leverage: {str(le)}")
                 logger.warning(f"Continuing without setting leverage. Will use the existing leverage setting.")
             
             # Ana emir parametreleri
@@ -239,7 +266,10 @@ class BitgetHandler:
                 params["orderType"] = "market"
             else:
                 params["orderType"] = "limit"
-                params["price"] = str(current_price)
+                # Fiyatı Bitget'in istediği formatta yuvarla (0.1'in katları)
+                rounded_price = round(current_price * 10) / 10  # 0.1'in en yakın katına yuvarla
+                logger.info(f"Rounding price from {current_price} to {rounded_price} (0.1 steps)")
+                params["price"] = str(rounded_price)
 
             # TP/SL değerlerini ana emirde ekle (sadece pozisyon açma emirleri için)
             if side.startswith("open_") and self.config.get('enable_tp_sl', False):
@@ -260,76 +290,114 @@ class BitgetHandler:
                         tp_price = current_price * (1 - tp_percentage / 100)
                         sl_price = current_price * (1 + sl_percentage / 100)
                     
+                    # Fiyatları Bitget'in istediği formatta yuvarla (0.1'in katları)
+                    tp_price = round(tp_price * 10) / 10
+                    sl_price = round(sl_price * 10) / 10
+                    
                     logger.info(f"Adding TP/SL to {side} order:")
                     logger.info(f"Entry Price: {current_price}")
                     logger.info(f"TP Price: {tp_price:.5f} ({tp_percentage:.5f}%)")
                     logger.info(f"SL Price: {sl_price:.5f} ({sl_percentage:.5f}%)")
                     
                     # TP/SL parametrelerini ana emre ekle
-                    params["presetTakeProfitPrice"] = f"{tp_price:.5f}"
-                    params["presetStopLossPrice"] = f"{sl_price:.5f}"
+                    params["presetTakeProfitPrice"] = f"{tp_price:.1f}"
+                    params["presetStopLossPrice"] = f"{sl_price:.1f}"
                 except Exception as e:
                     logger.error(f"Error calculating TP/SL prices: {str(e)}")
             
             logger.info(f"Placing {side} order for {formatted_symbol}, size: {size}, params: {params}")
             
-            # Ana emri gönder
-            response = self.base_api.post("/api/mix/v1/order/placeOrder", params)
-            logger.info(f"Main order placed successfully: {response}")
-
-            # Telegram bildirimi için mesaj oluştur
-            if side.startswith("open_"):
-                # Response'dan size bilgisini al, yoksa params'dan kullan
-                order_size = params.get('size', '0')
+            try:
+                # Ana emri gönder
+                response = self.base_api.post("/api/mix/v1/order/placeOrder", params)
+                logger.info(f"Main order placed successfully: {response}")
                 
-                message = (
-                    f"🔔 {side.upper()} order placed\n"
-                    f"Symbol: {formatted_symbol}\n"
-                    f"Size: {order_size}\n"
-                    f"Entry Price: ${current_price:.2f}\n"
-                )
+                # Telegram bildirimi için mesaj oluştur
+                if side.startswith("open_"):
+                    # Response'dan size bilgisini al, yoksa params'dan kullan
+                    order_size = params.get('size', '0')
+                    
+                    message = (
+                        f"🔔 {side.upper()} order placed\n"
+                        f"Symbol: {formatted_symbol}\n"
+                        f"Size: {order_size}\n"
+                        f"Entry Price: ${current_price:.2f}\n"
+                    )
+                    
+                    # TP/SL bilgilerini ekle
+                    if self.config.get('enable_tp_sl', False):
+                        if side == "open_long":
+                            tp_percentage = float(self.config.get('long_take_profit_percentage', 2.5))
+                            sl_percentage = float(self.config.get('long_stop_loss_percentage', 1.5))
+                            tp_price = round(current_price * (1 + tp_percentage / 100) * 10) / 10
+                            sl_price = round(current_price * (1 - sl_percentage / 100) * 10) / 10
+                            message += (
+                                f"Take Profit: ${tp_price:.1f} (+{tp_percentage}%)\n"
+                                f"Stop Loss: ${sl_price:.1f} (-{sl_percentage}%)"
+                            )
+                        else:  # open_short
+                            tp_percentage = float(self.config.get('short_take_profit_percentage', 2.5))
+                            sl_percentage = float(self.config.get('short_stop_loss_percentage', 1.5))
+                            tp_price = round(current_price * (1 - tp_percentage / 100) * 10) / 10
+                            sl_price = round(current_price * (1 + sl_percentage / 100) * 10) / 10
+                            message += (
+                                f"Take Profit: ${tp_price:.1f} (-{tp_percentage}%)\n"
+                                f"Stop Loss: ${sl_price:.1f} (+{sl_percentage}%)"
+                            )
+
+                    # İkinci bildirim - Pozisyon detayları
+                    position_message = (
+                        f"🔔 New {side.replace('open_', '').upper()} position opened\n"
+                        f"Symbol: {formatted_symbol.replace('_UMCBL', '')}\n"
+                        f"Entry Price: {current_price:.1f}\n"
+                        f"Size: {order_size}\n"
+                        f"Order ID: {response['data']['orderId']}\n"
+                    )
+
+                    # Her iki bildirimi de gönder
+                    asyncio.run(self.send_telegram_notification(message))
+                    asyncio.run(self.send_telegram_notification(position_message))
+
+                return response
+            except BitgetAPIException as be:
+                logger.error(f"Bitget API error: {str(be)}")
+                # API hata kodlarını kontrol et
+                if hasattr(be, 'code') and be.code:
+                    logger.error(f"Bitget error code: {be.code}")
+                    if be.code == '40010':
+                        logger.error("Insufficient balance error")
+                    elif be.code == '40003':
+                        logger.error("Invalid parameter error")
+                    elif be.code == '45115':
+                        logger.error("Price format error - should be multiple of 0.1")
+                        # Market emri deneyelim
+                        logger.info("Trying with market order instead...")
+                        params["orderType"] = "market"
+                        if "price" in params:
+                            del params["price"]
+                        try:
+                            response = self.base_api.post("/api/mix/v1/order/placeOrder", params)
+                            logger.info(f"Market order placed successfully: {response}")
+                            return response
+                        except Exception as me:
+                            logger.error(f"Market order also failed: {str(me)}")
                 
-                # TP/SL bilgilerini ekle
-                if self.config.get('enable_tp_sl', False):
-                    if side == "open_long":
-                        tp_percentage = float(self.config.get('long_take_profit_percentage', 2.5))
-                        sl_percentage = float(self.config.get('long_stop_loss_percentage', 1.5))
-                        tp_price = current_price * (1 + tp_percentage / 100)
-                        sl_price = current_price * (1 - sl_percentage / 100)
-                        message += (
-                            f"Take Profit: ${tp_price:.2f} (+{tp_percentage}%)\n"
-                            f"Stop Loss: ${sl_price:.2f} (-{sl_percentage}%)"
-                        )
-                    else:  # open_short
-                        tp_percentage = float(self.config.get('short_take_profit_percentage', 2.5))
-                        sl_percentage = float(self.config.get('short_stop_loss_percentage', 1.5))
-                        tp_price = current_price * (1 - tp_percentage / 100)
-                        sl_price = current_price * (1 + sl_percentage / 100)
-                        message += (
-                            f"Take Profit: ${tp_price:.2f} (-{tp_percentage}%)\n"
-                            f"Stop Loss: ${sl_price:.2f} (+{sl_percentage}%)"
-                        )
-
-                # İkinci bildirim - Pozisyon detayları
-                position_message = (
-                    f"🔔 New {side.replace('open_', '').upper()} position opened\n"
-                    f"Symbol: {formatted_symbol.replace('_UMCBL', '')}\n"
-                    f"Entry Price: {current_price:.2f}\n"
-                    f"Size: {order_size}\n"
-                    f"Order ID: {response['data']['orderId']}\n"
-                )
-
-                # Her iki bildirimi de gönder
-                asyncio.run(self.send_telegram_notification(message))
-                asyncio.run(self.send_telegram_notification(position_message))
-
-            return response
+                # Telegram ile hata bildir
+                error_message = f"❌ Bitget API error: {str(be)}"
+                asyncio.run(self.send_telegram_notification(error_message))
+                return {"error": str(be)}
             
         except Exception as e:
             logger.error(f"Failed to place order: {str(e)}")
             import traceback
             logger.error(f"Order placement error details: {traceback.format_exc()}")
-            return None
+            # Telegram ile hata bildir
+            error_message = f"❌ Order error: {str(e)}"
+            try:
+                asyncio.run(self.send_telegram_notification(error_message))
+            except:
+                pass
+            return {"error": str(e)}
     
     def get_open_positions(self):
         """Get all open positions
