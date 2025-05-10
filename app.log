@@ -15453,3 +15453,371 @@ ealized PnL: -0.1632 USDT
 2025-05-10 04:22:15,742 - bitget_handler - WARNING - No positions found using any endpoint
 2025-05-10 04:22:15,742 - bitget_handler - INFO - Starting to format 0 positions for dashboard
 2025-05-10 04:22:15,742 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:34:50,084 - bitget_handler - INFO - Initialized with config: leverage=10, order_size_percentage=50.0
+2025-05-10 15:34:50,085 - bitget_handler - INFO - Bitget handler initialized
+2025-05-10 15:34:50,085 - bitget_handler - INFO - Initialized with config: leverage=10, order_size_percentage=50.0
+2025-05-10 15:34:50,085 - bitget_handler - INFO - Bitget handler initialized
+2025-05-10 15:34:50,086 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:34:50,163 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.58:5000
+2025-05-10 15:34:50,164 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-10 15:34:50,167 - werkzeug - INFO -  * Restarting with stat
+2025-05-10 15:34:50,864 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858893473, 'data': []}
+2025-05-10 15:34:50,865 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:34:51,003 - bitget_handler - INFO - Initialized with config: leverage=10, order_size_percentage=50.0
+2025-05-10 15:34:51,003 - bitget_handler - INFO - Bitget handler initialized
+2025-05-10 15:34:51,004 - bitget_handler - INFO - Initialized with config: leverage=10, order_size_percentage=50.0
+2025-05-10 15:34:51,004 - bitget_handler - INFO - Bitget handler initialized
+2025-05-10 15:34:51,005 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:34:51,032 - werkzeug - WARNING -  * Debugger is active!
+2025-05-10 15:34:51,039 - werkzeug - INFO -  * Debugger PIN: 555-120-799
+2025-05-10 15:34:51,641 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858894247, 'data': []}
+2025-05-10 15:34:51,642 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:34:51,809 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858894416, 'data': []}
+2025-05-10 15:34:51,810 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:34:52,406 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:34:52,409 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:34:52,409 - bitget_handler - INFO - Initialized position monitor with 0 positions
+2025-05-10 15:34:52,410 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:34:52,521 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858895118, 'data': []}
+2025-05-10 15:34:52,522 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:34:52,798 - werkzeug - INFO - 127.0.0.1 - - [10/May/2025 15:34:52] "[32mGET / HTTP/1.1[0m" 302 -
+2025-05-10 15:34:52,807 - bitget_handler - INFO - Initialized with config: leverage=10, order_size_percentage=50.0
+2025-05-10 15:34:52,809 - bitget_handler - INFO - Bitget handler initialized
+2025-05-10 15:34:52,810 - __main__ - INFO - Fetching positions from Bitget API...
+2025-05-10 15:34:52,812 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:34:53,208 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858895813, 'data': []}
+2025-05-10 15:34:53,209 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:34:53,272 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:34:53,274 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:34:53,274 - bitget_handler - INFO - Initialized position monitor with 0 positions
+2025-05-10 15:34:53,275 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:34:53,593 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858896168, 'data': []}
+2025-05-10 15:34:53,594 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:34:53,938 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858896538, 'data': []}
+2025-05-10 15:34:53,938 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:34:54,014 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858896618, 'data': []}
+2025-05-10 15:34:54,015 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:34:54,288 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858896899, 'data': []}
+2025-05-10 15:34:54,289 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:34:54,702 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:34:54,705 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:34:54,705 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:34:54,706 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:34:54,779 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858897388, 'data': []}
+2025-05-10 15:34:54,780 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:34:55,062 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:34:55,070 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:34:55,071 - __main__ - INFO - No positions returned from API
+2025-05-10 15:34:55,532 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:34:55,536 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:34:55,536 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:34:55,537 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:34:55,744 - bitget_handler - INFO - Account API response: {'code': '00000', 'msg': 'success', 'requestTime': 1746858898343, 'data': {'marginCoin': 'USDT', 'locked': '0', 'available': '67.57884813', 'crossMaxAvailable': '67.57884813', 'fixedMaxAvailable': '67.57884813', 'maxTransferOut': '67.57884813', 'equity': '67.57884813', 'usdtEquity': '67.578848134233', 'btcEquity': '0.000651492818', 'crossRiskRate': '0', 'crossMarginLeverage': 10, 'fixedLongLeverage': 10, 'fixedShortLeverage': 10, 'marginMode': 'fixed', 'holdMode': 'double_hold', 'unrealizedPL': '0', 'bonus': '0', 'crossedUnrealizedPL': '', 'isolatedUnrealizedPL': '0'}}
+2025-05-10 15:34:55,745 - bitget_handler - INFO - Account details - Available: 67.57884813, Equity: 67.57884813, Unrealized PnL: 0.0
+2025-05-10 15:34:55,746 - __main__ - INFO - Account details - Balance: 67.57884813 USDT, Equity: 67.57884813 USDT, Unrealized PnL: 0.0 USDT
+2025-05-10 15:34:55,845 - werkzeug - INFO - 127.0.0.1 - - [10/May/2025 15:34:55] "GET /dashboard HTTP/1.1" 200 -
+2025-05-10 15:34:59,707 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:34:59,828 - bitget_handler - INFO - Initialized with config: leverage=10, order_size_percentage=50.0
+2025-05-10 15:34:59,829 - bitget_handler - INFO - Bitget handler initialized
+2025-05-10 15:34:59,839 - werkzeug - INFO - 127.0.0.1 - - [10/May/2025 15:34:59] "GET /settings HTTP/1.1" 200 -
+2025-05-10 15:35:00,365 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858902974, 'data': []}
+2025-05-10 15:35:00,366 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:00,537 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:01,065 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858903666, 'data': []}
+2025-05-10 15:35:01,066 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:01,175 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858903786, 'data': []}
+2025-05-10 15:35:01,176 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:01,703 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:01,706 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:01,706 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:01,707 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:01,832 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858904435, 'data': []}
+2025-05-10 15:35:01,832 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:02,448 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:02,451 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:02,451 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:02,452 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:06,708 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:07,328 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858909916, 'data': []}
+2025-05-10 15:35:07,328 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:07,453 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:08,016 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858910595, 'data': []}
+2025-05-10 15:35:08,017 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:08,162 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858910771, 'data': []}
+2025-05-10 15:35:08,163 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:08,648 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:08,651 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:08,651 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:08,652 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:08,817 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858911423, 'data': []}
+2025-05-10 15:35:08,818 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:09,382 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:09,386 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:09,386 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:09,387 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:13,653 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:14,289 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858916897, 'data': []}
+2025-05-10 15:35:14,290 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:14,388 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:15,010 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858917596, 'data': []}
+2025-05-10 15:35:15,010 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:15,109 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858917718, 'data': []}
+2025-05-10 15:35:15,109 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:15,671 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:15,673 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:15,674 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:15,674 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:16,010 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858918619, 'data': []}
+2025-05-10 15:35:16,011 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:16,604 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:16,607 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:16,607 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:16,607 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:20,675 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:21,285 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858923894, 'data': []}
+2025-05-10 15:35:21,286 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:21,608 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:21,888 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858924497, 'data': []}
+2025-05-10 15:35:21,889 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:22,256 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858924842, 'data': []}
+2025-05-10 15:35:22,257 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:22,522 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:22,524 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:22,525 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:22,525 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:22,896 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858925486, 'data': []}
+2025-05-10 15:35:22,897 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:23,486 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:23,488 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:23,489 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:23,489 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:27,526 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:28,197 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858930801, 'data': []}
+2025-05-10 15:35:28,198 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:28,490 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:28,880 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858931487, 'data': []}
+2025-05-10 15:35:28,881 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:29,203 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858931766, 'data': []}
+2025-05-10 15:35:29,204 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:29,582 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:29,585 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:29,586 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:29,586 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:29,848 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858932456, 'data': []}
+2025-05-10 15:35:29,848 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:30,464 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:30,467 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:30,468 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:30,469 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:34,587 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:35,356 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858937875, 'data': []}
+2025-05-10 15:35:35,357 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:35,470 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:36,130 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858938716, 'data': []}
+2025-05-10 15:35:36,130 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:36,225 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858938820, 'data': []}
+2025-05-10 15:35:36,226 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:36,938 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:36,941 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:36,941 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:36,942 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:36,973 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858939578, 'data': []}
+2025-05-10 15:35:36,973 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:37,642 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:37,644 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:37,644 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:37,645 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:41,942 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:42,605 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858945214, 'data': []}
+2025-05-10 15:35:42,605 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:42,646 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:43,372 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858945966, 'data': []}
+2025-05-10 15:35:43,373 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:43,463 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858946060, 'data': []}
+2025-05-10 15:35:43,464 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:44,147 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:44,150 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:44,150 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:44,151 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:44,287 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858946862, 'data': []}
+2025-05-10 15:35:44,288 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:44,923 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:44,927 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:44,927 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:44,928 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:49,152 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:49,773 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858952386, 'data': []}
+2025-05-10 15:35:49,773 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:49,929 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:50,553 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858953163, 'data': []}
+2025-05-10 15:35:50,553 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:50,688 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858953296, 'data': []}
+2025-05-10 15:35:50,688 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:51,393 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:51,393 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:51,393 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:51,969 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858954564, 'data': []}
+2025-05-10 15:35:51,970 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:53,849 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:53,851 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:53,852 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:53,852 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:56,394 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:56,996 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858959594, 'data': []}
+2025-05-10 15:35:56,996 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:35:57,593 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858960206, 'data': []}
+2025-05-10 15:35:57,594 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:58,229 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:35:58,232 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:35:58,233 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:35:58,234 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:35:58,852 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:35:59,459 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858962071, 'data': []}
+2025-05-10 15:35:59,460 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:00,129 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858962729, 'data': []}
+2025-05-10 15:36:00,130 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:00,753 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:00,756 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:00,756 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:00,757 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:36:03,236 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:03,891 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858966485, 'data': []}
+2025-05-10 15:36:03,892 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:04,510 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858967098, 'data': []}
+2025-05-10 15:36:04,511 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:05,104 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:05,106 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:05,106 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:05,107 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:36:05,757 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:06,375 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858968971, 'data': []}
+2025-05-10 15:36:06,376 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:07,005 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858969606, 'data': []}
+2025-05-10 15:36:07,006 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:07,611 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:07,613 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:07,613 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:07,614 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:36:10,108 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:10,795 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858973394, 'data': []}
+2025-05-10 15:36:10,795 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:11,560 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858974160, 'data': []}
+2025-05-10 15:36:11,560 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:12,171 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:12,173 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:12,174 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:12,174 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:36:12,614 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:13,206 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858975813, 'data': []}
+2025-05-10 15:36:13,208 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:13,782 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858976391, 'data': []}
+2025-05-10 15:36:13,783 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:14,451 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:14,453 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:14,454 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:14,454 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:36:17,175 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:17,953 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858980564, 'data': []}
+2025-05-10 15:36:17,954 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:18,597 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858981195, 'data': []}
+2025-05-10 15:36:18,597 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:19,256 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:19,259 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:19,259 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:19,260 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:36:19,455 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:20,178 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858982785, 'data': []}
+2025-05-10 15:36:20,178 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:20,794 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858983405, 'data': []}
+2025-05-10 15:36:20,795 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:21,386 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:21,388 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:21,389 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:21,389 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:36:24,261 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:24,915 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858987519, 'data': []}
+2025-05-10 15:36:24,915 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:25,497 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858988108, 'data': []}
+2025-05-10 15:36:25,498 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:25,816 - bitget_handler - INFO - Initialized with config: leverage=10, order_size_percentage=50.0
+2025-05-10 15:36:25,816 - bitget_handler - INFO - Bitget handler initialized
+2025-05-10 15:36:25,827 - werkzeug - INFO - 127.0.0.1 - - [10/May/2025 15:36:25] "GET /settings HTTP/1.1" 200 -
+2025-05-10 15:36:26,161 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:26,163 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:26,164 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:26,164 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:36:26,389 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:27,001 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858989596, 'data': []}
+2025-05-10 15:36:27,002 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:27,763 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858990361, 'data': []}
+2025-05-10 15:36:27,763 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:28,368 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:28,370 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:28,371 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:28,371 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:36:31,165 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:31,777 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858994386, 'data': []}
+2025-05-10 15:36:31,778 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:32,398 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858995011, 'data': []}
+2025-05-10 15:36:32,398 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:32,981 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:32,984 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:32,985 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:32,985 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:36:33,371 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:33,973 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858996575, 'data': []}
+2025-05-10 15:36:33,973 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:34,635 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746858997245, 'data': []}
+2025-05-10 15:36:34,635 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:35,231 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:35,234 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:35,235 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:35,235 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:36:37,986 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:38,696 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746859001294, 'data': []}
+2025-05-10 15:36:38,697 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:39,297 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746859001906, 'data': []}
+2025-05-10 15:36:39,297 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:39,976 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:39,979 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:39,979 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:39,979 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:36:40,235 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:40,848 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746859003446, 'data': []}
+2025-05-10 15:36:40,848 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:41,465 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746859004050, 'data': []}
+2025-05-10 15:36:41,466 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:42,144 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:42,146 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:42,146 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:42,147 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:36:44,980 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:45,564 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746859008170, 'data': []}
+2025-05-10 15:36:45,564 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:46,154 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746859008759, 'data': []}
+2025-05-10 15:36:46,155 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:46,758 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:46,761 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:46,762 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:46,762 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:36:47,147 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:47,791 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746859010385, 'data': []}
+2025-05-10 15:36:47,792 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:48,351 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746859010964, 'data': []}
+2025-05-10 15:36:48,352 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:49,028 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:49,031 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:49,031 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:49,032 - bitget_handler - WARNING - No positions were formatted successfully
+2025-05-10 15:36:51,763 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/allPosition with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:52,398 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/allPosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746859015008, 'data': []}
+2025-05-10 15:36:52,399 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/singlePosition with params: {'symbol': 'BTCUSDT_UMCBL', 'marginCoin': 'USDT'}
+2025-05-10 15:36:53,014 - bitget_handler - INFO - Raw position API response from /api/mix/v1/position/singlePosition: {'code': '00000', 'msg': 'success', 'requestTime': 1746859015613, 'data': []}
+2025-05-10 15:36:53,014 - bitget_handler - INFO - Trying endpoint: /api/mix/v1/position/holds with params: {'productType': 'umcbl', 'marginCoin': 'USDT'}
+2025-05-10 15:36:53,803 - bitget_handler - ERROR - Error with endpoint /api/mix/v1/position/holds: API Request Error(code=40404): Request URL NOT FOUND
+2025-05-10 15:36:53,806 - bitget_handler - WARNING - No positions found using any endpoint
+2025-05-10 15:36:53,806 - bitget_handler - INFO - Starting to format 0 positions for dashboard
+2025-05-10 15:36:53,807 - bitget_handler - WARNING - No positions were formatted successfully

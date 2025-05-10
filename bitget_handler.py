@@ -7,6 +7,7 @@ import logging
 import time
 from datetime import datetime
 import asyncio
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -280,36 +281,23 @@ class BitgetHandler:
             # TP/SL değerlerini ana emirde ekle (sadece pozisyon açma emirleri için)
             if side.startswith("open_") and self.config.get('enable_tp_sl', False):
                 try:
-                    # TP/SL yüzdelerini al
+                    atr_period = int(self.config.get('atr_period', 14))
+                    atr_tp_multiplier = float(self.config.get('atr_tp_multiplier', 2.5))
+                    atr_sl_multiplier = float(self.config.get('atr_sl_multiplier', 3.0))
+                    atr = self.get_atr(formatted_symbol, atr_period)
                     if side == "open_long":
-                        tp_percentage = self.config.get('long_take_profit_percentage', 2.5)
-                        sl_percentage = self.config.get('long_stop_loss_percentage', 1.5)
-                        
-                        # Long pozisyon için TP/SL fiyatları
-                        tp_price = current_price * (1 + tp_percentage / 100)
-                        sl_price = current_price * (1 - sl_percentage / 100)
+                        tp_price = current_price + (atr * atr_tp_multiplier)
+                        sl_price = current_price - (atr * atr_sl_multiplier)
                     else:  # open_short
-                        tp_percentage = self.config.get('short_take_profit_percentage', 2.5)
-                        sl_percentage = self.config.get('short_stop_loss_percentage', 1.5)
-                        
-                        # Short pozisyon için TP/SL fiyatları
-                        tp_price = current_price * (1 - tp_percentage / 100)
-                        sl_price = current_price * (1 + sl_percentage / 100)
-                    
-                    # Fiyatları Bitget'in istediği formatta yuvarla (0.1'in katları)
-                    tp_price = round(tp_price * 10) / 10
-                    sl_price = round(sl_price * 10) / 10
-                    
-                    logger.info(f"Adding TP/SL to {side} order:")
-                    logger.info(f"Entry Price: {current_price}")
-                    logger.info(f"TP Price: {tp_price:.5f} ({tp_percentage:.5f}%)")
-                    logger.info(f"SL Price: {sl_price:.5f} ({sl_percentage:.5f}%)")
-                    
-                    # TP/SL parametrelerini ana emre ekle
-                    params["presetTakeProfitPrice"] = f"{tp_price:.1f}"
-                    params["presetStopLossPrice"] = f"{sl_price:.1f}"
+                        tp_price = current_price - (atr * atr_tp_multiplier)
+                        sl_price = current_price + (atr * atr_sl_multiplier)
+                    tp_price = round(tp_price, 2)
+                    sl_price = round(sl_price, 2)
+                    logger.info(f"ATR tabanlı TP/SL: TP={tp_price}, SL={sl_price}, ATR={atr}")
+                    params["presetTakeProfitPrice"] = f"{tp_price}"
+                    params["presetStopLossPrice"] = f"{sl_price}"
                 except Exception as e:
-                    logger.error(f"Error calculating TP/SL prices: {str(e)}")
+                    logger.error(f"ATR tabanlı TP/SL hesaplanamadı: {str(e)}")
             
             logger.info(f"Placing {side} order for {formatted_symbol}, size: {size}, params: {params}")
             
@@ -757,4 +745,26 @@ class BitgetHandler:
             logger.error(f"Error formatting positions: {str(e)}")
             import traceback
             logger.error(f"Traceback: {traceback.format_exc()}")
-            return [] 
+            return []
+
+    def get_atr(self, symbol, period=14):
+        """Belirtilen sembol için ATR hesapla (Binance spot API üzerinden, son X bar)"""
+        try:
+            # Sembolü Binance formatına çevir (ör: BTCUSDT)
+            binance_symbol = symbol.replace('_UMCBL', '')
+            url = f'https://api.binance.com/api/v3/klines?symbol={binance_symbol}&interval=1h&limit={period+1}'
+            response = requests.get(url)
+            data = response.json()
+            trs = []
+            for i in range(1, len(data)):
+                high = float(data[i][2])
+                low = float(data[i][3])
+                prev_close = float(data[i-1][4])
+                tr = max(high - low, abs(high - prev_close), abs(low - prev_close))
+                trs.append(tr)
+            atr = sum(trs) / len(trs)
+            logger.info(f"ATR ({period}) for {symbol}: {atr}")
+            return atr
+        except Exception as e:
+            logger.error(f"ATR hesaplanamadı: {str(e)}")
+            return 0.0 

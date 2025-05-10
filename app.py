@@ -310,13 +310,6 @@ def settings():
     config = load_config()
     
     if request.method == 'POST':
-        # Get TP/SL values from form, use existing values if empty
-        long_tp = request.form.get('long_take_profit_percentage')
-        long_sl = request.form.get('long_stop_loss_percentage')
-        short_tp = request.form.get('short_take_profit_percentage')
-        short_sl = request.form.get('short_stop_loss_percentage')
-        
-        # Use existing values if form fields are empty
         updated_config = {
             "bitget_api_key": request.form.get('bitget_api_key'),
             "bitget_secret_key": request.form.get('bitget_secret_key'),
@@ -330,10 +323,9 @@ def settings():
             "enable_trading": 'enable_trading' in request.form,
             "enable_tp_sl": 'enable_tp_sl' in request.form,
             "enable_webhook_close_signals": 'enable_webhook_close_signals' in request.form,
-            "long_take_profit_percentage": float(long_tp) if long_tp else config.long_take_profit_percentage,
-            "long_stop_loss_percentage": float(long_sl) if long_sl else config.long_stop_loss_percentage,
-            "short_take_profit_percentage": float(short_tp) if short_tp else config.short_take_profit_percentage,
-            "short_stop_loss_percentage": float(short_sl) if short_sl else config.short_stop_loss_percentage
+            "atr_period": int(request.form.get('atr_period', 14)),
+            "atr_tp_multiplier": float(request.form.get('atr_tp_multiplier', 2.5)),
+            "atr_sl_multiplier": float(request.form.get('atr_sl_multiplier', 3.0))
         }
         
         with open('data/config.json', 'w') as f:
@@ -348,7 +340,7 @@ def settings():
             updated_config
         )
         
-        flash('Settings updated successfully', 'success')
+        flash('Ayarlar başarıyla güncellendi', 'success')
         return redirect(url_for('settings'))
     
     return render_template('settings.html', config=config)
