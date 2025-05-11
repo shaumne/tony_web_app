@@ -321,7 +321,6 @@ def settings():
             "max_daily_trades": int(request.form.get('max_daily_trades', 10)),
             "max_open_positions": int(request.form.get('max_open_positions', 10)),
             "enable_trading": 'enable_trading' in request.form,
-            "enable_tp_sl": 'enable_tp_sl' in request.form,
             "enable_webhook_close_signals": 'enable_webhook_close_signals' in request.form,
             "atr_period": int(request.form.get('atr_period', 14)),
             "atr_tp_multiplier": float(request.form.get('atr_tp_multiplier', 2.5)),

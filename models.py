@@ -18,7 +18,6 @@ class Config:
         self.max_daily_trades = kwargs.get('max_daily_trades', 10)
         self.max_open_positions = kwargs.get('max_open_positions', 10)
         self.enable_trading = kwargs.get('enable_trading', True)
-        self.enable_tp_sl = kwargs.get('enable_tp_sl', False)
         self.enable_webhook_close_signals = kwargs.get('enable_webhook_close_signals', False)
         self.atr_period = kwargs.get('atr_period', 14)
         self.atr_tp_multiplier = kwargs.get('atr_tp_multiplier', 2.5)

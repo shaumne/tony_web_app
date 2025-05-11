@@ -255,7 +255,14 @@ class BitgetHandler:
             params = {
                 "symbol": formatted_symbol,
                 "marginCoin": "USDT",
-                "size": str(size)
+                "size": str(size),
+                "orderType": "market",  # Market emri
+                "timeInForceValue": "normal",  # Normal zaman aşımı
+                "reduceOnly": False,  # Sadece azaltma değil
+                "postOnly": False,  # Sadece maker değil
+                "triggerPrice": "",  # Tetikleme fiyatı (boş)
+                "triggerType": "market_price",  # Piyasa fiyatı tetikleme
+                "clientOid": str(int(time.time() * 1000))  # Benzersiz emir ID'si
             }
             
             # Add side parameter based on the action
@@ -268,18 +275,8 @@ class BitgetHandler:
             elif side == "close_short":
                 params["side"] = "close_short"
             
-            # Order type (market, limit)
-            if order_type.lower() == "market":
-                params["orderType"] = "market"
-            else:
-                params["orderType"] = "limit"
-                # Fiyatı Bitget'in istediği formatta yuvarla (0.1'in katları)
-                rounded_price = round(current_price * 10) / 10  # 0.1'in en yakın katına yuvarla
-                logger.info(f"Rounding price from {current_price} to {rounded_price} (0.1 steps)")
-                params["price"] = str(rounded_price)
-
             # TP/SL değerlerini ana emirde ekle (sadece pozisyon açma emirleri için)
-            if side.startswith("open_") and self.config.get('enable_tp_sl', False):
+            if side.startswith("open_"):
                 try:
                     atr_period = int(self.config.get('atr_period', 14))
                     atr_tp_multiplier = float(self.config.get('atr_tp_multiplier', 2.5))
@@ -291,13 +288,22 @@ class BitgetHandler:
                     else:  # open_short
                         tp_price = current_price - (atr * atr_tp_multiplier)
                         sl_price = current_price + (atr * atr_sl_multiplier)
-                    tp_price = round(tp_price, 2)
-                    sl_price = round(sl_price, 2)
+                    
+                    # Fiyatları 0.1'in katı olacak şekilde yuvarla
+                    tp_price = round(tp_price * 10) / 10
+                    sl_price = round(sl_price * 10) / 10
+                    
                     logger.info(f"ATR tabanlı TP/SL: TP={tp_price}, SL={sl_price}, ATR={atr}")
-                    params["presetTakeProfitPrice"] = f"{tp_price}"
-                    params["presetStopLossPrice"] = f"{sl_price}"
+                    
+                    # Bitget API'sine uygun TP/SL parametreleri
+                    params["presetTakeProfitPrice"] = str(tp_price)
+                    params["presetStopLossPrice"] = str(sl_price)
+                    
+                    logger.info(f"TP/SL parametreleri eklendi: {params}")
                 except Exception as e:
                     logger.error(f"ATR tabanlı TP/SL hesaplanamadı: {str(e)}")
+                    import traceback
+                    logger.error(f"TP/SL hata detayları: {traceback.format_exc()}")
             
             logger.info(f"Placing {side} order for {formatted_symbol}, size: {size}, params: {params}")
             
