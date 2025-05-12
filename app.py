@@ -166,7 +166,52 @@ def login():
 @login_required
 def logout():
     logout_user()
+    flash('You have been logged out successfully', 'success')
     return redirect(url_for('login'))
+
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        
+        # Load users data
+        with open('data/users.json', 'r') as f:
+            users = json.load(f)
+        
+        # Check if current user exists in the database
+        if current_user.id not in users:
+            flash('User account not found', 'danger')
+            return redirect(url_for('change_password'))
+        
+        # Verify current password
+        if not check_password_hash(users[current_user.id]['password'], current_password):
+            flash('Current password is incorrect', 'danger')
+            return redirect(url_for('change_password'))
+        
+        # Validate new password
+        if not new_password:
+            flash('New password cannot be empty', 'danger')
+            return redirect(url_for('change_password'))
+        
+        # Check if new passwords match
+        if new_password != confirm_password:
+            flash('New passwords do not match', 'danger')
+            return redirect(url_for('change_password'))
+        
+        # Update password
+        users[current_user.id]['password'] = generate_password_hash(new_password)
+        
+        # Save updated users data
+        with open('data/users.json', 'w') as f:
+            json.dump(users, f)
+        
+        flash('Your password has been changed successfully', 'success')
+        return redirect(url_for('dashboard'))
+    
+    return render_template('change_password.html')
 
 @app.route('/dashboard')
 @login_required
@@ -339,7 +384,7 @@ def settings():
             updated_config
         )
         
-        flash('Ayarlar başarıyla güncellendi', 'success')
+        flash('Settings updated successfully', 'success')
         return redirect(url_for('settings'))
     
     return render_template('settings.html', config=config)
