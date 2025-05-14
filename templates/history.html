@@ -107,6 +107,53 @@
         background-color: #1f2937;
         border: 1px solid #374151;
     }
+    
+    .fee-cell {
+        color: var(--danger-color);
+        font-weight: 600;
+    }
+    
+    .stats-card {
+        padding: 1.5rem;
+        border-radius: 1rem;
+        background-color: #1f2937;
+        border: 1px solid #374151;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    }
+    
+    .stats-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0;
+    }
+    
+    .stats-label {
+        font-size: 0.875rem;
+        color: #9ca3af;
+    }
+    
+    .order-id-badge {
+        font-size: 0.7rem;
+        background-color: #374151;
+        color: #9ca3af;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+    }
+    
+    .lever-badge {
+        font-size: 0.7rem;
+        background-color: #4b5563;
+        color: #e5e7eb;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+    }
 </style>
 {% endblock %}
 
@@ -118,7 +165,7 @@
 </div>
 
 {% if positions %}
-    <!-- Chart and PnL Section -->
+    <!-- Statistics and PnL -->
     <div class="row mb-4">
         <div class="col-lg-8">
             <div class="position-chart-container">
@@ -132,6 +179,21 @@
                     {{ "%.2f"|format(total_pnl) }} USDT
                 </div>
                 <div class="small text-muted">From {{ positions|length }} closed positions</div>
+            </div>
+            
+            <div class="row">
+                <div class="col-6">
+                    <div class="stats-card">
+                        <p class="stats-value">{{ trade_count }}</p>
+                        <p class="stats-label">Total Trades</p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="stats-card">
+                        <p class="stats-value">{{ "%.2f"|format(total_pnl / trade_count) if trade_count > 0 else "0.00" }}</p>
+                        <p class="stats-label">Average P/L</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -153,8 +215,11 @@
                                     <th>Entry Price</th>
                                     <th>Exit Price</th>
                                     <th>Size</th>
+                                    <th>Leverage</th>
                                     <th>Open Time</th>
                                     <th>Close Time</th>
+                                    <th>Fees</th>
+                                    <th>Order ID</th>
                                     <th class="text-end">P/L</th>
                                 </tr>
                             </thead>
@@ -169,11 +234,18 @@
                                         <span class="badge bg-danger position-badge">SHORT</span>
                                         {% endif %}
                                     </td>
-                                    <td>{{ position.entry_price }}</td>
-                                    <td>{{ position.exit_price }}</td>
-                                    <td>{{ position.size }}</td>
+                                    <td>{{ "%.2f"|format(position.entry_price) }}</td>
+                                    <td>{{ "%.2f"|format(position.exit_price) }}</td>
+                                    <td>{{ "%.4f"|format(position.size) }}</td>
+                                    <td><span class="lever-badge">{{ position.lever }}x</span></td>
                                     <td>{{ position.open_time }}</td>
                                     <td>{{ position.close_time }}</td>
+                                    <td class="fee-cell">{{ "%.2f"|format(position.open_fee|default(0) + position.close_fee|default(0)) }}</td>
+                                    <td>
+                                        <span class="order-id-badge" title="Open Order: {{ position.open_order_id }}, Close Order: {{ position.close_order_id }}">
+                                            {{ position.open_order_id[:8] }}...
+                                        </span>
+                                    </td>
                                     <td class="pnl-cell">
                                         <span class="{% if position.pnl > 0 %}profit{% elif position.pnl < 0 %}loss{% endif %}">
                                             {{ "%.2f"|format(position.pnl) }}
@@ -195,7 +267,7 @@
                 <div class="card-body">
                     <div class="empty-state">
                         <i class="fas fa-history empty-state-icon"></i>
-                        <p class="empty-state-message">No closed positions found. Closed positions will appear here after signals to close positions are received.</p>
+                        <p class="empty-state-message">No closed positions found. Positions will appear here once they are closed.</p>
                     </div>
                 </div>
             </div>
@@ -207,16 +279,23 @@
 {% block extra_js %}
 {% if positions %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Hidden data transfer area -->
+<input type="hidden" id="positionsData" value="{{ positions|tojson }}">
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Get position data (PnL values and dates)
-        var positionData = [];
-        {% for position in positions %}
-        positionData.push({
-            pnl: {{ position.pnl }},
-            date: "{{ position.close_time }}"
+        // Get position data from hidden input
+        var rawData = document.getElementById('positionsData').value;
+        var positions = JSON.parse(rawData);
+        
+        // Extract PnL values and dates
+        var positionData = positions.map(function(position) {
+            return {
+                pnl: position.pnl,
+                date: position.close_time
+            };
         });
-        {% endfor %}
         
         // Sort by date (oldest first)
         positionData.sort(function(a, b) {
@@ -245,9 +324,9 @@
                     data: cumulativePnl,
                     borderColor: '#4cc9f0',
                     backgroundColor: 'rgba(76, 201, 240, 0.1)',
-                    borderWidth: 2,
+                    borderWidth: 3,
                     fill: true,
-                    tension: 0.3,
+                    tension: 0.4,
                     pointBackgroundColor: function(context) {
                         var index = context.dataIndex;
                         var value = context.dataset.data[index];
@@ -255,14 +334,30 @@
                     },
                     pointBorderColor: '#1f2937',
                     pointRadius: 5,
-                    pointHoverRadius: 7
+                    pointHoverRadius: 8
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
+                    legend: {
+                        labels: {
+                            color: '#e5e7eb',
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
                     tooltip: {
+                        backgroundColor: 'rgba(31, 41, 55, 0.9)',
+                        titleColor: '#e5e7eb',
+                        bodyColor: '#e5e7eb',
+                        bodyFont: {
+                            size: 13
+                        },
+                        borderColor: 'rgba(75, 85, 99, 0.3)',
+                        borderWidth: 1,
                         callbacks: {
                             label: function(context) {
                                 return 'P/L: ' + context.raw.toFixed(2) + ' USDT';
@@ -276,6 +371,7 @@
                             color: 'rgba(75, 85, 99, 0.2)'
                         },
                         ticks: {
+                            color: '#9ca3af',
                             maxRotation: 0,
                             autoSkip: true,
                             maxTicksLimit: 8
@@ -286,6 +382,7 @@
                             color: 'rgba(75, 85, 99, 0.2)'
                         },
                         ticks: {
+                            color: '#9ca3af',
                             callback: function(value) {
                                 return value.toFixed(2) + ' USDT';
                             }
@@ -293,6 +390,16 @@
                     }
                 }
             }
+        });
+        
+        // Add tooltip to order IDs
+        document.querySelectorAll('.order-id-badge').forEach(function(badge) {
+            badge.addEventListener('click', function() {
+                navigator.clipboard.writeText(badge.title)
+                    .then(function() {
+                        alert('Order IDs copied to clipboard.');
+                    });
+            });
         });
     });
 </script>

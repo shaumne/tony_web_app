@@ -825,3 +825,147 @@ class BitgetHandler:
             logger.error(f"Hata detayları: {traceback.format_exc()}")
             logger.warning(f"ATR hesaplanamadığı için varsayılan değer kullanılıyor: 0")
             return 0.0  # ATR hesaplanamazsa varsayılan değer 
+
+    def get_position_history(self, limit=50, order="desc"):
+        """Bitget API'sinden emir geçmişini al
+        
+        Args:
+            limit (int): Alınacak kayıt sayısı (varsayılan: 50, maksimum: 100)
+            order (str): Sıralama kuralı (desc: yeniden eskiye, asc: eskiden yeniye)
+            
+        Returns:
+            list: İşlem geçmişi listesi
+        """
+        try:
+            # Başlangıç ve bitiş zamanları (varsayılan: son 30 gün)
+            current_time = int(time.time() * 1000)  # Şimdiki zaman (milisaniye)
+            start_time = current_time - (30 * 24 * 60 * 60 * 1000)  # 30 gün öncesi
+            
+            logger.info(f"Zaman aralığı: {datetime.fromtimestamp(start_time/1000)} - {datetime.fromtimestamp(current_time/1000)}")
+            
+            # Sadece BTCUSDT için çalıştır (closed_order.py'deki gibi)
+            symbol = "BTCUSDT_UMCBL"
+            
+            # API parametreleri (closed_order.py'deki gibi)
+            params = {
+                "symbol": symbol,
+                "startTime": str(start_time),
+                "endTime": str(current_time),
+                "pageSize": str(limit)  # limit yerine pageSize kullan
+            }
+            
+            logger.info(f"Requesting order history for {symbol} with params: {params}")
+            
+            try:
+                # ordersHistory metodunu kullan (history değil!)
+                response = self.order_api.ordersHistory(params)
+                logger.info(f"Order history API response for {symbol}: {response}")
+                
+                if response and 'data' in response and 'orderList' in response['data']:
+                    orders = response['data']['orderList']
+                    logger.info(f"Retrieved {len(orders)} orders for {symbol}")
+                    
+                    # Emirleri formatla
+                    formatted_positions = []
+                    for order in orders:
+                        try:
+                            # Sadece tamamlanmış emirleri işle
+                            state = order.get('state', '')
+                            if state not in ['filled', 'partially_filled']:
+                                continue
+                            
+                            # Temel emir verilerini al
+                            order_id = order.get('orderId', '')
+                            symbol_str = order.get('symbol', '').replace('_UMCBL', '')
+                            size = float(order.get('size', '0'))
+                            price = order.get('price')
+                            avg_price = float(order.get('priceAvg', '0'))
+                            fee = float(order.get('fee', '0'))
+                            side = order.get('side', '')
+                            
+                            # Yön (direction) belirle
+                            if 'open_long' in side:
+                                direction = 'long'
+                                action = 'open'
+                            elif 'open_short' in side:
+                                direction = 'short'
+                                action = 'open'
+                            elif 'close_long' in side:
+                                direction = 'long'
+                                action = 'close'
+                            elif 'close_short' in side:
+                                direction = 'short'
+                                action = 'close'
+                            else:
+                                # Default değerler
+                                direction = side
+                                action = 'unknown'
+                                logger.warning(f"Unknown side value: {side}")
+                            
+                            # PnL ve ücretleri hesapla
+                            pnl = float(order.get('totalProfits', '0'))
+                            
+                            # Zaman bilgilerini formatlama
+                            c_time = int(order.get('cTime', '0'))
+                            u_time = int(order.get('uTime', '0'))
+                            create_time = datetime.fromtimestamp(c_time/1000).strftime('%Y-%m-%d %H:%M:%S')
+                            update_time = datetime.fromtimestamp(u_time/1000).strftime('%Y-%m-%d %H:%M:%S')
+                            
+                            # Emir objesini oluştur
+                            formatted_order = {
+                                'id': order_id,
+                                'symbol': symbol_str,
+                                'direction': direction,
+                                'action': action,
+                                'side': side,
+                                'type': order.get('orderType', ''),
+                                'price': avg_price,  # price değeri None olabileceği için her zaman avg_price kullan
+                                'size': size,
+                                'state': state,
+                                'pnl': pnl,
+                                'fee': fee,
+                                'create_time': create_time,
+                                'update_time': update_time,
+                                'lever': order.get('leverage', '1'),
+                                'price_avg': avg_price,
+                                # Eşleştirme için ek alanlar
+                                'open_order_id': order_id if action == 'open' else '',
+                                'close_order_id': order_id if action == 'close' else '',
+                                'open_fee': fee if action == 'open' else 0,
+                                'close_fee': fee if action == 'close' else 0,
+                                'open_time': create_time if action == 'open' else '',
+                                'close_time': create_time if action == 'close' else '',
+                                'entry_price': avg_price if action == 'open' else 0,
+                                'exit_price': avg_price if action == 'close' else 0,
+                                'closed': action == 'close'
+                            }
+                            
+                            formatted_positions.append(formatted_order)
+                            logger.info(f"Formatted order: {formatted_order['symbol']} {formatted_order['direction']} {formatted_order['side']}")
+                        except Exception as e:
+                            logger.error(f"Error formatting order: {str(e)}")
+                            import traceback
+                            logger.error(f"Error details: {traceback.format_exc()}")
+                            continue
+                    
+                    # Tarihe göre sırala (en yeni en üstte)
+                    if formatted_positions:
+                        formatted_positions.sort(key=lambda x: x['update_time'], reverse=True)
+                    
+                    logger.info(f"Successfully formatted {len(formatted_positions)} orders")
+                    return formatted_positions
+                else:
+                    logger.warning(f"No order history data found for {symbol}")
+                    logger.warning(f"API response: {response}")
+                    return []
+            except Exception as e:
+                logger.error(f"Error getting order history for {symbol}: {str(e)}")
+                import traceback
+                logger.error(f"Error details: {traceback.format_exc()}")
+                return []
+            
+        except Exception as e:
+            logger.error(f"Failed to get order history: {str(e)}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            return [] 

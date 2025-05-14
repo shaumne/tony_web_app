@@ -267,33 +267,82 @@ def dashboard():
 @app.route('/history')
 @login_required
 def position_history():
-    # Load positions
-    with open('data/positions.json', 'r') as f:
-        positions_data = json.load(f)
-    
-    # Filter closed positions
-    closed_positions_data = [pos for pos in positions_data if pos.get('closed', False)]
-    
-    # Sort by close time, most recent first
-    closed_positions_data.sort(key=lambda x: x.get('close_time', ''), reverse=True)
-    
-    # Calculate PnL for each position and total
+    # Get order history from Bitget API
+    closed_positions_data = []
     total_pnl = 0
-    for pos in closed_positions_data:
-        entry = float(pos.get('entry_price', 0))
-        exit_price = float(pos.get('exit_price', 0))
-        size = float(pos.get('size', 0))
-        direction = pos.get('direction', '')
-        
-        if direction == 'long':
-            pnl = (exit_price - entry) * size
-        else:  # short
-            pnl = (entry - exit_price) * size
-            
-        pos['pnl'] = round(pnl, 2)
-        total_pnl += pnl
+    trade_count = 0
     
-    return render_template('history.html', positions=closed_positions_data, total_pnl=round(total_pnl, 2))
+    if bitget_handler:
+        try:
+            logger.info("Fetching order history from Bitget API...")
+            order_history = bitget_handler.get_position_history(limit=100)
+            logger.info(f"Retrieved {len(order_history)} orders from API")
+            
+            # Filter closed positions
+            closed_positions = []
+            open_positions = []
+            
+            for order in order_history:
+                # Separate closed and open positions
+                if order.get('action') == 'close':
+                    closed_positions.append(order)
+                elif order.get('action') == 'open':
+                    open_positions.append(order)
+            
+            logger.info(f"Filtered {len(closed_positions)} close orders and {len(open_positions)} open orders")
+            
+            # Calculate statistics
+            closed_positions_data = closed_positions
+            if closed_positions_data:
+                total_pnl = sum(float(pos.get('pnl', 0)) for pos in closed_positions_data)
+                trade_count = len(closed_positions_data)
+                logger.info(f"Processed {trade_count} closed positions with total PnL: {total_pnl}")
+            
+        except Exception as e:
+            logger.error(f"Failed to get order history from Bitget: {str(e)}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            flash('Error retrieving order history', 'danger')
+            
+            # Continue with local data in case of error
+            try:
+                logger.info("Falling back to local position data")
+                with open('data/positions.json', 'r') as f:
+                    positions_data = json.load(f)
+                
+                # Filter closed positions
+                closed_positions_data = [pos for pos in positions_data if pos.get('closed', False)]
+                
+                # Sort by date, newest first
+                closed_positions_data.sort(key=lambda x: x.get('close_time', ''), reverse=True)
+                
+                # Calculate PnL for each position and find total
+                total_pnl = 0
+                for pos in closed_positions_data:
+                    entry = float(pos.get('entry_price', 0))
+                    exit_price = float(pos.get('exit_price', 0))
+                    size = float(pos.get('size', 0))
+                    direction = pos.get('direction', '')
+                    
+                    if direction == 'long':
+                        pnl = (exit_price - entry) * size
+                    else:  # short
+                        pnl = (entry - exit_price) * size
+                        
+                    pos['pnl'] = round(pnl, 2)
+                    total_pnl += pnl
+                    
+                trade_count = len(closed_positions_data)
+            except Exception as e:
+                logger.error(f"Failed to load local position data: {str(e)}")
+                flash('Failed to load local position data', 'danger')
+    else:
+        flash('Trading system not initialized', 'warning')
+    
+    return render_template('history.html', 
+                           positions=closed_positions_data, 
+                           total_pnl=round(total_pnl, 2),
+                           trade_count=trade_count)
 
 @app.route('/close_position', methods=['POST'])
 @login_required
