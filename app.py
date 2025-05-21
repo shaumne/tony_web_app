@@ -64,7 +64,8 @@ def init_data_files():
                 "order_size_percentage": 10,
                 "max_daily_trades": 10,
                 "max_open_positions": 3,
-                "enable_trading": True
+                "enable_trading": True,
+                "auto_position_switch": False
             }, f)
     
     if not os.path.exists('data/positions.json'):
@@ -319,6 +320,7 @@ def position_history():
                 # Calculate PnL for each position and find total
                 total_pnl = 0
                 for pos in closed_positions_data:
+                    # Calculate PnL
                     entry = float(pos.get('entry_price', 0))
                     exit_price = float(pos.get('exit_price', 0))
                     size = float(pos.get('size', 0))
@@ -330,6 +332,14 @@ def position_history():
                         pnl = (entry - exit_price) * size
                         
                     pos['pnl'] = round(pnl, 2)
+                    
+                    # Add missing fields needed for display
+                    pos['lever'] = pos.get('lever', '10')
+                    pos['open_fee'] = pos.get('open_fee', 0)
+                    pos['close_fee'] = pos.get('close_fee', 0)
+                    pos['open_order_id'] = pos.get('open_order_id', pos.get('id', 'unknown'))
+                    pos['close_order_id'] = pos.get('close_order_id', 'close-' + pos.get('id', 'unknown'))
+                    
                     total_pnl += pnl
                     
                 trade_count = len(closed_positions_data)
@@ -418,7 +428,8 @@ def settings():
             "enable_webhook_close_signals": 'enable_webhook_close_signals' in request.form,
             "atr_period": int(request.form.get('atr_period', 14)),
             "atr_tp_multiplier": float(request.form.get('atr_tp_multiplier', 2.5)),
-            "atr_sl_multiplier": float(request.form.get('atr_sl_multiplier', 3.0))
+            "atr_sl_multiplier": float(request.form.get('atr_sl_multiplier', 3.0)),
+            "auto_position_switch": 'auto_position_switch' in request.form
         }
         
         with open('data/config.json', 'w') as f:
@@ -634,32 +645,62 @@ def process_signal(symbol, direction, action):
             asyncio.run(send_telegram_notification(f"⚠️ {msg}"))
             return
         
-        # Açık pozisyon limiti kontrolü - API'den gerçek zamanlı veri alarak
-        if action == 'open':
-            logger.info("Checking open positions count...")
-            current_positions = bitget_handler.get_open_positions()
-            logger.info(f"Current positions from API: {current_positions}")
-            open_positions_count = len([p for p in current_positions if float(p.get('total', '0')) > 0])
-            logger.info(f"Open positions count: {open_positions_count}, Max allowed: {config.max_open_positions}")
+        # Açık pozisyon kontrolü - API'den gerçek zamanlı veri alarak
+        logger.info("Checking open positions...")
+        current_positions = bitget_handler.get_open_positions()
+        logger.info(f"Current positions from API: {current_positions}")
+        
+        # Açık pozisyonları analiz et
+        open_positions_count = len([p for p in current_positions if float(p.get('total', '0')) > 0])
+        logger.info(f"Open positions count: {open_positions_count}, Max allowed: {config.max_open_positions}")
+        
+        # Mevcut pozisyonları kontrol et
+        for pos in current_positions:
+            pos_symbol = pos.get('symbol', '').replace('_UMCBL', '')
+            pos_side = pos.get('holdSide', '').lower()
+            pos_size = float(pos.get('total', '0'))
             
-            if open_positions_count >= config.max_open_positions:
-                msg = f"Maximum open positions limit reached ({config.max_open_positions}). Ignoring signal."
-                logger.info(msg)
-                asyncio.run(send_telegram_notification(f"⚠️ {msg}"))
-                return
-            
-            # Aynı sembol ve yönde açık pozisyon kontrolü
-            for pos in current_positions:
-                pos_symbol = pos.get('symbol', '').replace('_UMCBL', '')
-                pos_side = pos.get('holdSide', '').lower()
-                pos_size = float(pos.get('total', '0'))
-                
-                # Pozisyon boyutu sıfırdan büyükse ve sembol/yön eşleşiyorsa
-                if pos_size > 0 and pos_symbol == symbol and pos_side == direction:
-                    msg = f"Already have an open {direction.upper()} position for {symbol}. Ignoring signal."
-                    logger.info(msg)
-                    asyncio.run(send_telegram_notification(f"⚠️ {msg}"))
-                    return
+            # Pozisyon boyutu sıfırdan büyükse
+            if pos_size > 0 and pos_symbol == symbol:
+                if action == 'open':
+                    if pos_side == direction:
+                        # Aynı yönde pozisyon zaten var
+                        msg = f"Already have an open {direction.upper()} position for {symbol}. Ignoring signal."
+                        logger.info(msg)
+                        asyncio.run(send_telegram_notification(f"⚠️ {msg}"))
+                        return
+                    elif config.auto_position_switch:
+                        # Ters yönde pozisyon var ve otomatik geçiş aktif
+                        logger.info(f"Found opposite position ({pos_side}) while trying to open {direction}. Closing it first...")
+                        
+                        # Mevcut pozisyonu kapat
+                        close_side = f"close_{pos_side}"
+                        close_result = bitget_handler.place_order(symbol, close_side)
+                        logger.info(f"Close order result: {close_result}")
+                        
+                        if close_result and close_result.get('data', {}).get('orderId'):
+                            # Pozisyon kapatma başarılı, yeni pozisyon açılabilir
+                            msg = f"Closed {pos_side.upper()} position to switch to {direction.upper()}"
+                            logger.info(msg)
+                            asyncio.run(send_telegram_notification(f"🔄 {msg}"))
+                        else:
+                            msg = f"Failed to close {pos_side.upper()} position. Cannot switch to {direction.upper()}"
+                            logger.error(msg)
+                            asyncio.run(send_telegram_notification(f"❌ {msg}"))
+                            return
+                    else:
+                        # Otomatik geçiş kapalı, işlemi iptal et
+                        msg = f"Have opposite position ({pos_side.upper()}) and auto-switch is disabled. Ignoring signal."
+                        logger.info(msg)
+                        asyncio.run(send_telegram_notification(f"⚠️ {msg}"))
+                        return
+        
+        # Yeni pozisyon açma limiti kontrolü
+        if action == 'open' and open_positions_count >= config.max_open_positions:
+            msg = f"Maximum open positions limit reached ({config.max_open_positions}). Ignoring signal."
+            logger.info(msg)
+            asyncio.run(send_telegram_notification(f"⚠️ {msg}"))
+            return
         
         # İşlemi gerçekleştir
         if action == 'open':
@@ -707,17 +748,13 @@ def process_signal(symbol, direction, action):
                 # Telegram bildirimi gönder
                 message = (
                     f"🔔 New {direction.upper()} position opened\n"
-                    f"Symbol: {formatted_symbol}\n"
-                    f"Entry Price: {new_position['entry_price']}\n"
+                    f"Symbol: {symbol}\n"
+                    f"Entry Price: {price if float(price) > 0 else avg_price}\n"
                     f"Size: {size}\n"
                     f"Order ID: {order_id}"
                 )
                 asyncio.run(send_telegram_notification(message))
-                logger.info(f"Successfully opened {direction} position for {formatted_symbol}")
-            else:
-                error_msg = f"Failed to place order. API response: {order_result}"
-                logger.error(error_msg)
-                asyncio.run(send_telegram_notification(f"❌ {error_msg}"))
+                logger.info(f"Successfully opened {direction} position for {symbol}")
             
         elif action == 'close':
             # Eşleşen açık pozisyonları bul
@@ -776,12 +813,10 @@ def process_signal(symbol, direction, action):
                     )
                     asyncio.run(send_telegram_notification(message))
                     logger.info(f"Successfully closed {direction} position for {symbol}")
-    
+                    
     except Exception as e:
-        error_msg = f"Error executing trade: {str(e)}"
+        error_msg = f"Error processing signal: {str(e)}"
         logger.error(error_msg)
-        import traceback
-        logger.error(f"Trade error details: {traceback.format_exc()}")
         asyncio.run(send_telegram_notification(f"❌ {error_msg}"))
 
 def start_position_monitor(bitget_handler):

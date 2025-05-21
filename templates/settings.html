@@ -199,44 +199,51 @@
                     </div>
                     
                     <!-- Trading Settings -->
-                    <div class="settings-section">
-                        <h5 class="section-title"><i class="fas fa-sliders-h"></i>Trading Settings</h5>
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="leverage" class="form-label">Leverage</label>
-                                    <input type="number" class="form-control" id="leverage" name="leverage" value="{{ config.leverage }}" min="1" max="125">
-                                    <div class="form-text">Leverage multiplier (1-125x)</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="order_size_percentage" class="form-label">Order Size (%)</label>
-                                    <input type="number" class="form-control" id="order_size_percentage" name="order_size_percentage" value="{{ config.order_size_percentage }}" min="1" max="100" step="0.1">
-                                    <div class="form-text">Percentage of account balance</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="max_daily_trades" class="form-label">Max Daily Trades</label>
-                                    <input type="number" class="form-control" id="max_daily_trades" name="max_daily_trades" value="{{ config.max_daily_trades }}" min="1" max="100">
-                                    <div class="form-text">Maximum trades per day</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="max_open_positions" class="form-label">Max Open Positions</label>
-                                    <input type="number" class="form-control" id="max_open_positions" name="max_open_positions" value="{{ config.max_open_positions }}" min="1" max="50">
-                                    <div class="form-text">Maximum concurrent positions</div>
-                                </div>
-                            </div>
+                    <div class="card settings-card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-cogs me-2"></i>Trading Settings</h5>
                         </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="enable_trading" name="enable_trading" {% if config.enable_trading %}checked{% endif %}>
-                            <label class="form-check-label" for="enable_trading">
-                                Enable Trading
-                            </label>
-                            <div class="form-text">When disabled, the bot will not execute any trades</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="leverage">Leverage</label>
+                                        <input type="number" class="form-control" id="leverage" name="leverage" value="{{ config.leverage }}" min="1" max="100" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="order_size_percentage">Order Size (%)</label>
+                                        <input type="number" class="form-control" id="order_size_percentage" name="order_size_percentage" value="{{ config.order_size_percentage }}" min="1" max="100" step="0.1" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="max_daily_trades">Max Daily Trades</label>
+                                        <input type="number" class="form-control" id="max_daily_trades" name="max_daily_trades" value="{{ config.max_daily_trades }}" min="1" max="100" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="max_open_positions">Max Open Positions</label>
+                                        <input type="number" class="form-control" id="max_open_positions" name="max_open_positions" value="{{ config.max_open_positions }}" min="1" max="10" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="enable_trading" name="enable_trading" {% if config.enable_trading %}checked{% endif %}>
+                                        <label class="form-check-label" for="enable_trading">Enable Trading</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="auto_position_switch" name="auto_position_switch" {% if config.auto_position_switch %}checked{% endif %}>
+                                        <label class="form-check-label" for="auto_position_switch">Auto Position Switch (Automatically close opposite positions)</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     

@@ -1,407 +1,282 @@
-{% extends 'base.html' %}
+    {% extends 'base.html' %}
 
-{% block title %}Position History - Trading Bot{% endblock %}
+    {% block title %}Position History - Trading Bot{% endblock %}
 
-{% block extra_css %}
-<style>
-    .profit {
-        color: var(--success-color);
-        font-weight: 600;
-    }
-    
-    .loss {
-        color: var(--danger-color);
-        font-weight: 600;
-    }
-    
-    .total-pnl-card {
-        border-radius: 1rem;
-        padding: 2rem;
-        text-align: center;
-        margin-bottom: 2rem;
-        border: 1px solid;
-        transition: all 0.3s ease;
-    }
-    
-    .total-pnl-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-    }
-    
-    .total-pnl-card.profit {
-        background-color: rgba(76, 201, 240, 0.1);
-        border-color: rgba(76, 201, 240, 0.3);
-    }
-    
-    .total-pnl-card.loss {
-        background-color: rgba(255, 90, 95, 0.1);
-        border-color: rgba(255, 90, 95, 0.3);
-    }
-    
-    .total-pnl-value {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-    }
-    
-    .position-badge {
-        border-radius: 0.375rem;
-        font-size: 0.75rem;
-        padding: 0.35em 0.65em;
-        font-weight: 600;
-    }
-    
-    .empty-state {
-        text-align: center;
-        padding: 3rem 2rem;
-    }
-    
-    .empty-state-icon {
-        font-size: 4rem;
-        margin-bottom: 1.5rem;
-        color: #4b5563;
-    }
-    
-    .empty-state-message {
-        font-size: 1rem;
-        color: #9ca3af;
-        max-width: 400px;
-        margin: 0 auto;
-    }
-    
-    .history-table th {
-        white-space: nowrap;
-    }
-    
-    .history-table td {
-        vertical-align: middle;
-    }
-    
-    .pnl-cell {
-        text-align: right;
-        font-weight: 600;
-    }
-    
-    .history-card {
-        border-radius: 1rem;
-        overflow: hidden;
-    }
-    
-    .card-header {
-        background-color: #374151;
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid #4b5563;
-    }
-    
-    .card-header h5 {
-        margin: 0;
-        color: #e5e7eb;
-        font-weight: 600;
-    }
-    
-    .position-chart-container {
-        height: 300px;
-        margin-bottom: 2rem;
-        border-radius: 1rem;
-        padding: 1rem;
-        background-color: #1f2937;
-        border: 1px solid #374151;
-    }
-    
-    .fee-cell {
-        color: var(--danger-color);
-        font-weight: 600;
-    }
-    
-    .stats-card {
-        padding: 1.5rem;
-        border-radius: 1rem;
-        background-color: #1f2937;
-        border: 1px solid #374151;
-        margin-bottom: 1rem;
-        transition: all 0.3s ease;
-    }
-    
-    .stats-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-    }
-    
-    .stats-value {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 0;
-    }
-    
-    .stats-label {
-        font-size: 0.875rem;
-        color: #9ca3af;
-    }
-    
-    .order-id-badge {
-        font-size: 0.7rem;
-        background-color: #374151;
-        color: #9ca3af;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        cursor: pointer;
-    }
-    
-    .lever-badge {
-        font-size: 0.7rem;
-        background-color: #4b5563;
-        color: #e5e7eb;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-    }
-</style>
-{% endblock %}
-
-{% block content %}
-<div class="row mb-4">
-    <div class="col-md-12">
-        <h1 class="page-title">Position History</h1>
-    </div>
-</div>
-
-{% if positions %}
-    <!-- Statistics and PnL -->
-    <div class="row mb-4">
-        <div class="col-lg-8">
-            <div class="position-chart-container">
-                <canvas id="pnlChart"></canvas>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="total-pnl-card {% if total_pnl > 0 %}profit{% elif total_pnl < 0 %}loss{% endif %}">
-                <div class="mb-2">Total Profit/Loss</div>
-                <div class="total-pnl-value {% if total_pnl > 0 %}profit{% elif total_pnl < 0 %}loss{% endif %}">
-                    {{ "%.2f"|format(total_pnl) }} USDT
-                </div>
-                <div class="small text-muted">From {{ positions|length }} closed positions</div>
-            </div>
-            
-            <div class="row">
-                <div class="col-6">
-                    <div class="stats-card">
-                        <p class="stats-value">{{ trade_count }}</p>
-                        <p class="stats-label">Total Trades</p>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="stats-card">
-                        <p class="stats-value">{{ "%.2f"|format(total_pnl / trade_count) if trade_count > 0 else "0.00" }}</p>
-                        <p class="stats-label">Average P/L</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Position History Table -->
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card history-card">
-                <div class="card-header">
-                    <h5><i class="fas fa-history me-2"></i>Closed Positions</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover history-table mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Symbol</th>
-                                    <th>Type</th>
-                                    <th>Entry Price</th>
-                                    <th>Exit Price</th>
-                                    <th>Size</th>
-                                    <th>Leverage</th>
-                                    <th>Open Time</th>
-                                    <th>Close Time</th>
-                                    <th>Fees</th>
-                                    <th>Order ID</th>
-                                    <th class="text-end">P/L</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for position in positions %}
-                                <tr>
-                                    <td>{{ position.symbol }}</td>
-                                    <td>
-                                        {% if position.direction == 'long' %}
-                                        <span class="badge bg-success position-badge">LONG</span>
-                                        {% else %}
-                                        <span class="badge bg-danger position-badge">SHORT</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ "%.2f"|format(position.entry_price) }}</td>
-                                    <td>{{ "%.2f"|format(position.exit_price) }}</td>
-                                    <td>{{ "%.4f"|format(position.size) }}</td>
-                                    <td><span class="lever-badge">{{ position.lever }}x</span></td>
-                                    <td>{{ position.open_time }}</td>
-                                    <td>{{ position.close_time }}</td>
-                                    <td class="fee-cell">{{ "%.2f"|format(position.open_fee|default(0) + position.close_fee|default(0)) }}</td>
-                                    <td>
-                                        <span class="order-id-badge" title="Open Order: {{ position.open_order_id }}, Close Order: {{ position.close_order_id }}">
-                                            {{ position.open_order_id[:8] }}...
-                                        </span>
-                                    </td>
-                                    <td class="pnl-cell">
-                                        <span class="{% if position.pnl > 0 %}profit{% elif position.pnl < 0 %}loss{% endif %}">
-                                            {{ "%.2f"|format(position.pnl) }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% else %}
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="empty-state">
-                        <i class="fas fa-history empty-state-icon"></i>
-                        <p class="empty-state-message">No closed positions found. Positions will appear here once they are closed.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endif %}
-{% endblock %}
-
-{% block extra_js %}
-{% if positions %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- Hidden data transfer area -->
-<input type="hidden" id="positionsData" value="{{ positions|tojson }}">
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get position data from hidden input
-        var rawData = document.getElementById('positionsData').value;
-        var positions = JSON.parse(rawData);
-        
-        // Extract PnL values and dates
-        var positionData = positions.map(function(position) {
-            return {
-                pnl: position.pnl,
-                date: position.close_time
-            };
-        });
-        
-        // Sort by date (oldest first)
-        positionData.sort(function(a, b) {
-            return new Date(a.date) - new Date(b.date);
-        });
-        
-        // Calculate cumulative values
-        var cumulativePnl = [];
-        var labels = [];
-        var runningTotal = 0;
-        
-        for (var i = 0; i < positionData.length; i++) {
-            runningTotal += positionData[i].pnl;
-            cumulativePnl.push(runningTotal);
-            labels.push(positionData[i].date);
+    {% block extra_css %}
+    <style>
+        .profit {
+            color: var(--success-color);
+            font-weight: 600;
         }
         
-        // Create chart
-        var ctx = document.getElementById('pnlChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Cumulative P/L (USDT)',
-                    data: cumulativePnl,
-                    borderColor: '#4cc9f0',
-                    backgroundColor: 'rgba(76, 201, 240, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: function(context) {
-                        var index = context.dataIndex;
-                        var value = context.dataset.data[index];
-                        return value >= 0 ? '#4cc9f0' : '#ff5a5f';
-                    },
-                    pointBorderColor: '#1f2937',
-                    pointRadius: 5,
-                    pointHoverRadius: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: '#e5e7eb',
-                            font: {
-                                size: 14
-                            }
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(31, 41, 55, 0.9)',
-                        titleColor: '#e5e7eb',
-                        bodyColor: '#e5e7eb',
-                        bodyFont: {
-                            size: 13
-                        },
-                        borderColor: 'rgba(75, 85, 99, 0.3)',
-                        borderWidth: 1,
-                        callbacks: {
-                            label: function(context) {
-                                return 'P/L: ' + context.raw.toFixed(2) + ' USDT';
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            color: 'rgba(75, 85, 99, 0.2)'
-                        },
-                        ticks: {
-                            color: '#9ca3af',
-                            maxRotation: 0,
-                            autoSkip: true,
-                            maxTicksLimit: 8
-                        }
-                    },
-                    y: {
-                        grid: {
-                            color: 'rgba(75, 85, 99, 0.2)'
-                        },
-                        ticks: {
-                            color: '#9ca3af',
-                            callback: function(value) {
-                                return value.toFixed(2) + ' USDT';
-                            }
-                        }
-                    }
-                }
-            }
-        });
+        .loss {
+            color: var(--danger-color);
+            font-weight: 600;
+        }
         
-        // Add tooltip to order IDs
-        document.querySelectorAll('.order-id-badge').forEach(function(badge) {
-            badge.addEventListener('click', function() {
-                navigator.clipboard.writeText(badge.title)
-                    .then(function() {
-                        alert('Order IDs copied to clipboard.');
-                    });
+        .total-pnl-card {
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            border: 1px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .total-pnl-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .total-pnl-card.profit {
+            background-color: rgba(76, 201, 240, 0.1);
+            border-color: rgba(76, 201, 240, 0.3);
+        }
+        
+        .total-pnl-card.loss {
+            background-color: rgba(255, 90, 95, 0.1);
+            border-color: rgba(255, 90, 95, 0.3);
+        }
+        
+        .total-pnl-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .position-badge {
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            padding: 0.35em 0.65em;
+            font-weight: 600;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: #4b5563;
+        }
+        
+        .empty-state-message {
+            font-size: 1rem;
+            color: #9ca3af;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .history-table th {
+            white-space: nowrap;
+        }
+        
+        .history-table td {
+            vertical-align: middle;
+        }
+        
+        .pnl-cell {
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        .history-card {
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background-color: #374151;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #4b5563;
+        }
+        
+        .card-header h5 {
+            margin: 0;
+            color: #e5e7eb;
+            font-weight: 600;
+        }
+        
+        .fee-cell {
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+        
+        .stats-card {
+            padding: 1.5rem;
+            border-radius: 1rem;
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stats-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+        
+        .stats-label {
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+        
+        .order-id-badge {
+            font-size: 0.7rem;
+            background-color: #374151;
+            color: #9ca3af;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+        
+        .lever-badge {
+            font-size: 0.7rem;
+            background-color: #4b5563;
+            color: #e5e7eb;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+    </style>
+    {% endblock %}
+
+    {% block content %}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="page-title">Position History</h1>
+        </div>
+    </div>
+
+    {% if positions %}
+        <!-- Statistics and PnL -->
+        <div class="row mb-4">
+            <div class="col-lg-6">
+                <div class="total-pnl-card {% if total_pnl > 0 %}profit{% elif total_pnl < 0 %}loss{% endif %}">
+                    <div class="mb-2">Total Profit/Loss</div>
+                    <div class="total-pnl-value {% if total_pnl > 0 %}profit{% elif total_pnl < 0 %}loss{% endif %}">
+                        {{ "%.2f"|format(total_pnl) }} USDT
+                    </div>
+                    <div class="small text-muted">From {{ positions|length }} closed positions</div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="stats-card">
+                            <p class="stats-value">{{ trade_count }}</p>
+                            <p class="stats-label">Total Trades</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stats-card">
+                            <p class="stats-value">{{ "%.2f"|format(total_pnl / trade_count) if trade_count > 0 else "0.00" }}</p>
+                            <p class="stats-label">Average P/L</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Position History Table -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card history-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-history me-2"></i>Closed Positions</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover history-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Type</th>
+                                        <th>Entry Price</th>
+                                        <th>Exit Price</th>
+                                        <th>Size</th>
+                                        <th>Leverage</th>
+                                        <th>Open Time</th>
+                                        <th>Close Time</th>
+                                        <th>Fees</th>
+                                        <th>Order ID</th>
+                                        <th class="text-end">P/L</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for position in positions %}
+                                    <tr>
+                                        <td>{{ position.symbol }}</td>
+                                        <td>
+                                            {% if position.direction == 'long' %}
+                                            <span class="badge bg-success position-badge">LONG</span>
+                                            {% else %}
+                                            <span class="badge bg-danger position-badge">SHORT</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ "%.2f"|format(position.entry_price) }}</td>
+                                        <td>{{ "%.2f"|format(position.exit_price) }}</td>
+                                        <td>{{ "%.4f"|format(position.size) }}</td>
+                                        <td><span class="lever-badge">{{ position.lever }}x</span></td>
+                                        <td>{{ position.open_time }}</td>
+                                        <td>{{ position.close_time }}</td>
+                                        <td class="fee-cell">{{ "%.2f"|format(position.open_fee|default(0) + position.close_fee|default(0)) }}</td>
+                                        <td>
+                                            <span class="order-id-badge" title="Open Order: {{ position.open_order_id }}, Close Order: {{ position.close_order_id }}">
+                                                {{ position.open_order_id[:8] }}...
+                                            </span>
+                                        </td>
+                                        <td class="pnl-cell">
+                                            <span class="{% if position.pnl > 0 %}profit{% elif position.pnl < 0 %}loss{% endif %}">
+                                                {{ "%.2f"|format(position.pnl) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="empty-state">
+                            <i class="fas fa-history empty-state-icon"></i>
+                            <p class="empty-state-message">No closed positions found. Positions will appear here once they are closed.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% endblock %}
+
+    {% block extra_js %}
+    {% if positions %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add tooltip to order IDs
+            document.querySelectorAll('.order-id-badge').forEach(function(badge) {
+                badge.addEventListener('click', function() {
+                    navigator.clipboard.writeText(badge.title)
+                        .then(function() {
+                            alert('Order IDs copied to clipboard.');
+                        });
+                });
             });
         });
-    });
-</script>
-{% endif %}
-{% endblock %} 
+    </script>
+    {% endif %}
+    {% endblock %} 
